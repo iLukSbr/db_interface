@@ -4,20 +4,30 @@ import flet as ft
 
 import credentials
 
-def on_con_button_click(event):
-    # Check if any of the fields are empty
-    if not user_field.value or not password_field.value or not db_field.value:
-        # Display an error dialog
-        ft.Dialog(
-            title="Erro",
-            text="Por favor, preencha todos os campos.",
-            buttons=[ft.dialog.CloseButton("Fechar")]
-        ).show()
-    else:
-        # Attempt to connect to the database
-        pass  # replace with your connection code
-
 def main(page: ft.Page):
+    def on_con_button_click(e):
+        if not user_field.value or not password_field.value or not db_field.value:
+            dlg = ft.AlertDialog(
+                title=ft.Text(
+                    "Preencha todos os campos.",
+                    text_align="CENTER"
+                ),
+
+            )
+            page.dialog = dlg
+            dlg.open = True
+            page.update()
+        else:
+            if save_check.value: # Save credentials
+                credentials.save_credentials(page, {
+                    "host": host_field.value,
+                    "user": user_field.value,
+                    "password": password_field.value,
+                    "database": db_field.value
+                })
+            #con_db(credentials)
+            pass
+    
     page.title = "Database Interface"
     page.window_height = 720
     page.window_width = 1280
@@ -43,7 +53,7 @@ def main(page: ft.Page):
         value=last_credentials["password"]
     )
 
-    check_field = ft.Checkbox(
+    save_check = ft.Checkbox(
         label="Salvar credenciais",
         value=False
     )
@@ -58,16 +68,16 @@ def main(page: ft.Page):
         value=last_credentials["database"]
     )
 
-    con_button = ft.ElevatedButton(text="Conectar")
-
-    # Set the button click event handler
-    #con_button.on_click(on_con_button_click)
+    con_button = ft.ElevatedButton(
+        text="Conectar",
+        on_click=on_con_button_click
+    )
 
     page.add(
         host_field,
         user_field,
         password_field,
-        check_field,
+        save_check,
         db_field,
         con_button
     )
