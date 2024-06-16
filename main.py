@@ -29,7 +29,31 @@ def banner(text):
 
 # Lista dos bancos de dados disponíveis
 def draw_select_db_page():
-    def dropdown_changed(e):
+    # Banco de dados foi selecionado
+    def db_changed(e):
+        # Tabela foi selecionada
+        def table_changed(e):
+            banner(f"Carregando a tabela {table_field.value}")
+            cursor = con.cursor()
+            cursor.execute(f"SELECT * FROM {table_field.value};")
+            table = cursor.fetchall()
+            # table_display = ft.DataTable(
+            #     columns=[
+            #         ft.DataColumn(ft.Text("Coluna")),
+            #         ft.DataColumn(ft.Text("Valor")),
+            #     ],
+            #     rows=[
+            #         ft.DataRow(
+            #             cells=[
+            #                 ft.DataCell(ft.Text(column[0])),
+            #                 ft.DataCell(ft.Text(str(column[1]))),
+            #             ]
+            #         )
+            #         for column in table
+            #     ]
+            # )
+            # page.add(table_display)
+
         db_name = db_field.value
         if db_name:
             try:
@@ -43,7 +67,7 @@ def draw_select_db_page():
                 tables = cursor.fetchall()
                 table_field = ft.Dropdown(
                     label="Tabela",
-                    on_change=dropdown_changed
+                    on_change=table_changed
                 )
                 for table in tables:
                     table_field.options.append(ft.dropdown.Option(table[0]))
@@ -51,10 +75,6 @@ def draw_select_db_page():
                 page.update()
             except Exception as e:
                  banner(e)
-
-    # Ação do botão Selecionar
-    #def on_db_button_click(e):
-
 
     for i in range(7):
         page.controls.pop()
@@ -67,7 +87,7 @@ def draw_select_db_page():
         databases = cursor.fetchall()
         db_field = ft.Dropdown(
             label="Banco de dados",
-            on_change=dropdown_changed    
+            on_change=db_changed    
         )
         for database in databases:
             db_field.options.append(ft.dropdown.Option(database[0]))
