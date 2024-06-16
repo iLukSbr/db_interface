@@ -41,6 +41,12 @@ def menu_bar(p, con):
                         leading=ft.Icon(ft.icons.SAVE),
                         style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
                         on_click=handle_save_json_click
+                    ),
+                    ft.MenuItemButton(
+                        content=ft.Text("Desconectar"),
+                        leading=ft.Icon(ft.icons.CLOSE),
+                        style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
+                        on_click=lambda e: handle_disconnect_click(e, con)
                     )
                 ]
             ),
@@ -76,15 +82,6 @@ def menu_bar(p, con):
     )
     return ft.Row([menubar])
     
-def disconnect_button(con):
-    global page
-    return ft.MenuItemButton(
-        content=ft.Text("Desconectar"),
-        leading=ft.Icon(ft.icons.CLOSE),
-        style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
-        on_click=lambda e: handle_disconnect_click(e, con)
-    )
-
 def handle_disconnect_click(e, con):
     global page
     display_action(e.control.content.value, page)

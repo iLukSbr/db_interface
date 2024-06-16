@@ -14,12 +14,12 @@ def draw_table_view(page, usr_credentials, con):
         try:
             cursor = con.cursor()
             if usr_credentials["database"] == "MySQL":
-                cursor.execute(f"USE {db_name};")
-                cursor.execute("SHOW TABLES;")
+                cursor.execute(f"USE {db_name};SHOW TABLES;")
             elif usr_credentials["database"] == "PostgreSQL":
-                cursor.execute(f"SET search_path TO {db_name};")
-                cursor.execute("SELECT table_name FROM information_schema.tables;")
+                cursor.execute(f"SELECT tablename FROM pg_catalog.pg_tables where schemaname='{db_name}' ORDER By tablename ASC;")
             tables = cursor.fetchall()
+            if usr_credentials["database"] == "PostgreSQL":
+                cursor.execute(f"SET search_path TO {db_name};")
         except Exception as e:
             display_action(e, page)
         table_field = ft.Dropdown(
@@ -56,7 +56,7 @@ def draw_table_view(page, usr_credentials, con):
             if usr_credentials["database"] == "MySQL":
                 cursor.execute("SHOW DATABASES;")
             elif usr_credentials["database"] == "PostgreSQL":
-                cursor.execute("SELECT schema_name FROM information_schema.schemata;")
+                cursor.execute("SELECT schema_name FROM information_schema.schemata ORDER BY schema_name ASC;")
             databases = cursor.fetchall()
         except Exception as e:
             display_action(e, page)
