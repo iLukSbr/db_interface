@@ -12,23 +12,29 @@ def main(page: ft.Page):
             title=ft.Text(
                 text,
                 text_align="CENTER"
-            ),
-
+            )
         )
         page.dialog = dlg
         dlg.open = True
         page.update()
 
-    def draw_db_page():
+    def draw_select_db_page():
         for i in range(7):
             page.controls.pop()
-        page.update()
-    
-        # tree_button = ft.ElevatedButton(
-        #     text="Árvore de tabelas e views",
-        #     on_click=on_tree_button_click
-        # )
-
+        try:
+            cursor = con.cursor()
+            if usr_credentials["database"] == "MySQL":
+                cursor.execute("SHOW DATABASES")
+            elif usr_credentials["database"] == "PostgreSQL":
+                cursor.execute("SELECT datname FROM pg_database")
+            databases = cursor.fetchall()
+            db_field = ft.Dropdown(label="Banco de dados")
+            for database in databases:
+                db_field.options.append(ft.dropdown.Option(database[0]))
+            page.add(db_field)
+            page.update()
+        except Exception as e:
+            dialog(e)
         
 
     def con_db(usr_credentials):
@@ -46,19 +52,20 @@ def main(page: ft.Page):
                 password=usr_credentials["password"]
             )
             dialog("Conexão realizada com sucesso.")
-            draw_db_page()
+            draw_select_db_page()
         except Exception as e:
             dialog(e)
 
     def on_con_button_click(e):
-        if not user_field.value or not password_field.value or not db_field.value:
+        global usr_credentials
+        if not user_field.value or not password_field.value or not db_type_field.value:
             dialog("Preencha todos os campos.")
         else:
             if not host_field.value or not port_field.value:
                 host_field.value = "localhost"
-                if db_field.value == "MySQL":
+                if db_type_field.value == "MySQL":
                     port_field.value = "3306"
-                elif db_field.value == "PostgreSQL":
+                elif db_type_field.value == "PostgreSQL":
                     port_field.value = "5432"
                 page.update()
             usr_credentials = {
@@ -66,7 +73,7 @@ def main(page: ft.Page):
                 "port": port_field.value,
                 "user": user_field.value,
                 "password": password_field.value,
-                "database": db_field.value
+                "database": db_type_field.value
             }
             if save_check.value: # Save credentials
                 credentials.save_credentials(page, usr_credentials)
@@ -118,7 +125,7 @@ def main(page: ft.Page):
         value=True
     )
 
-    db_field = ft.Dropdown(
+    db_type_field = ft.Dropdown(
         label="Banco de dados",
         options=[
             ft.dropdown.Option("MySQL"),
@@ -139,7 +146,7 @@ def main(page: ft.Page):
         user_field,
         password_field,
         save_check,
-        db_field,
+        db_type_field,
         con_button
     )
 
