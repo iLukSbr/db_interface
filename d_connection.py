@@ -2,8 +2,8 @@ import flet as ft
 import pymysql as my
 import psycopg2 as pg
 
-from d_messages import *
-from d_table import *
+from d_messages import display_action
+from d_table import draw_table_view
 
 def con_db(usr_credentials, page):
     connect_functions = {

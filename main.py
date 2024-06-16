@@ -2,15 +2,12 @@
 import flet as ft
 import platform
 
-# Funções
-from d_credentials import *
-from d_messages import *
-from d_connection import *
-      
 # Conectar ao gerenciador de bancos de dados
 # Página inicial
 def main(page: ft.Page):
     #page.client_storage.clear()
+
+    from d_credentials import get_credentials
 
     if(platform.system() == "Windows"):
         page.platform = ft.PagePlatform.WINDOWS
@@ -21,6 +18,10 @@ def main(page: ft.Page):
 
     # Ação do botão Conectar
     def on_con_button_click(e):
+        from d_credentials import save_credentials
+        from d_connection import con_db
+        from d_messages import display_action
+        
         if not user_field.value or not password_field.value or not db_type_field.value:
             display_action("Os campos usuário, senha e banco de dados devem estar preenchidos.", page)
         else:

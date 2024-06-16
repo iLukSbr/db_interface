@@ -2,11 +2,20 @@ import flet as ft
 import pymysql as my
 import psycopg2 as pg
 
-from d_messages import *
-from d_menu import *
+def create_table_display(table, column_names):
+    table_display = ft.DataTable(
+        columns=[ft.DataColumn(ft.Text(name)) for name in column_names],
+        rows=[ft.DataRow(cells=[ft.DataCell(ft.Text(str(value))) for value in row]) for row in table],
+    )
+    scroll_tab = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True)
+    scroll_tab.controls.append(table_display)
+    return scroll_tab
 
 # Lista dos bancos de dados disponíveis
 def draw_table_view(page, usr_credentials, con):
+    from d_messages import display_action
+    from d_menu import menu_bar
+
     menubar = menu_bar(page, con)
 
     # Gerar seletor de tabela
@@ -90,12 +99,9 @@ def draw_table_view(page, usr_credentials, con):
             column_names = [desc[0] for desc in cursor.description]
         except Exception as e:
             display_action(e, page)
-        table_display = ft.DataTable(
-            columns=[ft.DataColumn(ft.Text(name)) for name in column_names],
-            rows=[ft.DataRow(cells=[ft.DataCell(ft.Text(str(value))) for value in row]) for row in table],
-        )
-        scroll_tab = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True)
-        scroll_tab.controls.append(table_display)
+
+        scroll_tab = create_table_display(table, column_names)
+        
         table_selector = gen_tables_list(db_name, table_selection_evt.control.value)
         db_selector = gen_db_list(db_name)
 

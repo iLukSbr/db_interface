@@ -2,14 +2,16 @@ import flet as ft
 import pymysql as my
 import psycopg2 as pg
 
-from d_messages import *
-from d_save import *
+from d_messages import display_action
 
 global page
+global con
 
-def menu_bar(p, con):
+def menu_bar(p, c):
     global page
+    global con
     page = p
+    con = c
     menubar = ft.MenuBar(
         expand=True,
         style=ft.MenuStyle(
@@ -54,17 +56,23 @@ def menu_bar(p, con):
                 content=ft.Text("Ferramentas"),
                 controls=[
                     ft.MenuItemButton(
-                        content=ft.Text("Árvore de Tabelas"),
+                        content=ft.Text("Árvore de tabelas"),
                         leading=ft.Icon(ft.icons.ACCOUNT_TREE_OUTLINED),
                         style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
                         on_click=handle_tree_click
                     ),
                     ft.MenuItemButton(
-                        content=ft.Text("Tabela de Dados"),
+                        content=ft.Text("Tabela de dados"),
                         leading=ft.Icon(ft.icons.DATASET_OUTLINED),
                         style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
                         on_click=handle_table_click
-                    )
+                    ),
+                    ft.MenuItemButton(
+                        content=ft.Text("Consulta personalizada"),
+                        leading=ft.Icon(ft.icons.DASHBOARD_CUSTOMIZE_OUTLINED),
+                        style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
+                        on_click=handle_query_click
+                    ),
                 ]
             )
         ]
@@ -105,3 +113,12 @@ def handle_table_click(e):
     page.views.pop()
     
     pass
+
+def handle_query_click(e):
+    from d_query import queries
+
+    global page
+    global con
+    
+    display_action(e.control.content.value, page)
+    queries(page, con)
