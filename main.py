@@ -29,6 +29,29 @@ def banner(text):
 
 # Lista dos bancos de dados disponíveis
 def draw_select_db_page():
+    def dropdown_changed(e):
+        db_name = db_field.value
+        if db_name:
+            try:
+                cursor = con.cursor()
+                if usr_credentials["database"] == "MySQL":
+                    cursor.execute(f"USE {db_name};")
+                    cursor.execute("SHOW TABLES;")
+                elif usr_credentials["database"] == "PostgreSQL":
+                    cursor.execute(f"SET search_path TO {db_name};")
+                    cursor.execute("SELECT table_name FROM information_schema.tables;")
+                tables = cursor.fetchall()
+                table_field = ft.Dropdown(
+                    label="Tabela",
+                    on_change=dropdown_changed
+                )
+                for table in tables:
+                    table_field.options.append(ft.dropdown.Option(table[0]))
+                page.add(table_field)
+                page.update()
+            except Exception as e:
+                 banner(e)
+
     # Ação do botão Selecionar
     #def on_db_button_click(e):
 
@@ -42,15 +65,13 @@ def draw_select_db_page():
         elif usr_credentials["database"] == "PostgreSQL":
             cursor.execute("SELECT schema_name FROM information_schema.schemata;")
         databases = cursor.fetchall()
-        db_field = ft.Dropdown(label="Banco de dados")
+        db_field = ft.Dropdown(
+            label="Banco de dados",
+            on_change=dropdown_changed    
+        )
         for database in databases:
             db_field.options.append(ft.dropdown.Option(database[0]))
-            
-        db_button = ft.ElevatedButton(
-            text="Selecionar",
-            #on_click=on_db_button_click
-        )
-        page.add(db_field, db_button)
+        page.add(db_field)
         page.update()
     except Exception as e:
         banner(e)
