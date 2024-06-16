@@ -4,14 +4,13 @@ import psycopg2 as pg
 
 from d_messages import display_action
 
-global page
-global con
+global page, con, usr_credentials
 
-def menu_bar(p, c):
-    global page
-    global con
+def menu_bar(p, c, u):
+    global page, con, usr_credentials
     page = p
     con = c
+    usr_credentials = u
     menubar = ft.MenuBar(
         expand=True,
         style=ft.MenuStyle(
@@ -72,7 +71,7 @@ def menu_bar(p, c):
                         leading=ft.Icon(ft.icons.DASHBOARD_CUSTOMIZE_OUTLINED),
                         style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
                         on_click=handle_query_click
-                    ),
+                    )
                 ]
             )
         ]
@@ -108,17 +107,19 @@ def handle_tree_click(e):
     pass
 
 def handle_table_click(e):
-    global page
+    from d_table import draw_table_view
+
+    global page, con, usr_credentials
+
     display_action(e.control.content.value, page)
     page.views.pop()
-    
-    pass
+    page.update()
+    draw_table_view(page, con, usr_credentials)
 
 def handle_query_click(e):
     from d_query import queries
 
-    global page
-    global con
+    global page, con
     
     display_action(e.control.content.value, page)
-    queries(page, con)
+    queries(page, con, usr_credentials)

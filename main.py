@@ -5,6 +5,7 @@ import platform
 # Conectar ao gerenciador de bancos de dados
 # Página inicial
 def main(page: ft.Page):
+    # Limpar cache
     #page.client_storage.clear()
 
     from d_credentials import get_credentials
@@ -21,7 +22,7 @@ def main(page: ft.Page):
         from d_credentials import save_credentials
         from d_connection import con_db
         from d_messages import display_action
-        
+
         if not user_field.value or not password_field.value or not db_type_field.value:
             display_action("Os campos usuário, senha e banco de dados devem estar preenchidos.", page)
         else:

@@ -7,16 +7,16 @@ def create_table_display(table, column_names):
         columns=[ft.DataColumn(ft.Text(name)) for name in column_names],
         rows=[ft.DataRow(cells=[ft.DataCell(ft.Text(str(value))) for value in row]) for row in table],
     )
-    scroll_tab = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True)
-    scroll_tab.controls.append(table_display)
-    return scroll_tab
+    vertical = ft.Column([table_display],scroll=True)
+    horizontal = ft.Row([vertical], scroll=ft.ScrollMode.ALWAYS, expand=1,vertical_alignment=ft.CrossAxisAlignment.START)
+    return horizontal
 
 # Lista dos bancos de dados disponíveis
-def draw_table_view(page, usr_credentials, con):
+def draw_table_view(page, con, usr_credentials):
     from d_messages import display_action
     from d_menu import menu_bar
 
-    menubar = menu_bar(page, con)
+    menubar = menu_bar(page, con, usr_credentials)
 
     # Gerar seletor de tabela
     def gen_tables_list(db_name, val):
@@ -87,6 +87,7 @@ def draw_table_view(page, usr_credentials, con):
         )
         load_table(e, db_name, limit_field)
    
+    # Carregar tabela escolhida
     def load_table(table_selection_evt, db_name, limit_field):
         def on_limit_button_click(e, table_selection_evt, db_name, limit_field):
             load_table(table_selection_evt, db_name, limit_field)
@@ -104,7 +105,7 @@ def draw_table_view(page, usr_credentials, con):
         
         table_selector = gen_tables_list(db_name, table_selection_evt.control.value)
         db_selector = gen_db_list(db_name)
-
+        
         limit_button = ft.ElevatedButton(
             text="Limitar",
             on_click=lambda button_evt: on_limit_button_click(button_evt, table_selection_evt, db_name, limit_field)

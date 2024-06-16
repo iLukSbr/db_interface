@@ -1,11 +1,11 @@
 import flet as ft
 
-def queries(page, con):
+def queries(page, con, usr_credentials):
     from d_table import create_table_display
     from d_menu import menu_bar
     from d_messages import display_action
 
-    menubar = menu_bar(page, con)
+    menubar = menu_bar(page, con, usr_credentials)
     query_field = ft.TextField(
         label="",
         multiline=True

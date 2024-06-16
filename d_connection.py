@@ -2,10 +2,9 @@ import flet as ft
 import pymysql as my
 import psycopg2 as pg
 
-from d_messages import display_action
-from d_table import draw_table_view
-
 def con_db(usr_credentials, page):
+    from d_messages import display_action
+    from d_table import draw_table_view
     connect_functions = {
         "MySQL": my.connect,
         "PostgreSQL": pg.connect
@@ -19,6 +18,6 @@ def con_db(usr_credentials, page):
             password=usr_credentials["password"]
         )
         display_action("Conexão realizada com sucesso.", page)
-        draw_table_view(page, usr_credentials, con)
+        draw_table_view(page, con, usr_credentials)
     except Exception as e:
         display_action(e, page)
