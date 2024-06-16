@@ -4,6 +4,7 @@ import json
 
 from cryptography.fernet import Fernet
 
+# Criar ou recuperar uma chave de criptografia
 def get_key(page):
     if not page.client_storage.get("key"):
         key = Fernet.generate_key()
@@ -12,6 +13,7 @@ def get_key(page):
         key = page.client_storage.get("key").encode()
     return Fernet(key)
 
+# Recuperar as credenciais do usuário
 def get_credentials(page):
     cipher_suite = get_key(page)
 
@@ -23,6 +25,7 @@ def get_credentials(page):
         credentials = json.loads(decrypted)
     return credentials
 
+# Gravar as credenciais do usuário
 def save_credentials(page, usr_credentials):
     cipher_suite = get_key(page)
     cipher_json = json.dumps(usr_credentials)

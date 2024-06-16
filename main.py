@@ -4,62 +4,89 @@ import flet as ft
 
 import credentials
 
-def main(page: ft.Page):
-    #page.client_storage.clear()
+global page
+global usr_credentials
 
-    def dialog(text):
-        dlg = ft.AlertDialog(
-            title=ft.Text(
-                text,
-                text_align="CENTER"
-            )
-        )
-        page.dialog = dlg
-        dlg.open = True
+# Mensagem na tela
+def banner(text):
+    # Ação do botão OK
+    def close_banner(e):
+        page.banner.open = False
         page.update()
 
-    def draw_select_db_page():
-        for i in range(7):
-            page.controls.pop()
-        try:
-            cursor = con.cursor()
-            if usr_credentials["database"] == "MySQL":
-                cursor.execute("SHOW DATABASES")
-            elif usr_credentials["database"] == "PostgreSQL":
-                cursor.execute("SELECT datname FROM pg_database")
-            databases = cursor.fetchall()
-            db_field = ft.Dropdown(label="Banco de dados")
-            for database in databases:
-                db_field.options.append(ft.dropdown.Option(database[0]))
-            page.add(db_field)
-            page.update()
-        except Exception as e:
-            dialog(e)
+    page.banner = ft.Banner(
+        bgcolor=ft.colors.AMBER_100,
+        content=ft.Text(
+            text,
+            text_align="CENTER"
+        ),
+        actions=[
+            ft.TextButton("OK", on_click=close_banner)
+        ],
+    )
+    page.banner.open = True
+    page.update()
+
+# Lista dos bancos de dados disponíveis
+def draw_select_db_page():
+    # Ação do botão Selecionar
+    #def on_db_button_click(e):
+
+
+    for i in range(7):
+        page.controls.pop()
+    try:
+        cursor = con.cursor()
+        if usr_credentials["database"] == "MySQL":
+            cursor.execute("SHOW DATABASES;")
+        elif usr_credentials["database"] == "PostgreSQL":
+            cursor.execute("SELECT schema_name FROM information_schema.schemata;")
+        databases = cursor.fetchall()
+        db_field = ft.Dropdown(label="Banco de dados")
+        for database in databases:
+            db_field.options.append(ft.dropdown.Option(database[0]))
+            
+        db_button = ft.ElevatedButton(
+            text="Selecionar",
+            #on_click=on_db_button_click
+        )
+        page.add(db_field, db_button)
+        page.update()
+    except Exception as e:
+        banner(e)
         
+# Conectar ao gerenciador de bancos de dados
+def con_db(usr_credentials):
+    global con
+    connect_functions = {
+        "MySQL": my.connect,
+        "PostgreSQL": pg.connect
+    }
+    connect = connect_functions.get(usr_credentials["database"])
+    try:
+        con = connect(
+            host=usr_credentials["host"],
+            port=int(usr_credentials["port"]),
+            user=usr_credentials["user"],
+            password=usr_credentials["password"]
+        )
+        banner("Conexão realizada com sucesso.")
+        draw_select_db_page()
+    except Exception as e:
+        banner(e)
 
-    def con_db(usr_credentials):
-        global con
-        connect_functions = {
-            "MySQL": my.connect,
-            "PostgreSQL": pg.connect
-        }
-        connect = connect_functions.get(usr_credentials["database"])
-        try:
-            con = connect(
-                host=usr_credentials["host"],
-                port=int(usr_credentials["port"]),
-                user=usr_credentials["user"],
-                password=usr_credentials["password"]
-            )
-            dialog("Conexão realizada com sucesso.")
-            draw_select_db_page()
-        except Exception as e:
-            dialog(e)
+# Página inicial
+def main(p: ft.Page):
+    global page
+    page = p
+    #page.client_storage.clear()
 
+    # Ação do botão Conectar
     def on_con_button_click(e):
+        global page
         global usr_credentials
         if not user_field.value or not password_field.value or not db_type_field.value:
-            dialog("Preencha todos os campos.")
+            banner("Os campos usuário, senha e banco de dados devem estar preenchidos.")
         else:
             if not host_field.value or not port_field.value:
                 host_field.value = "localhost"
@@ -75,12 +102,12 @@ def main(page: ft.Page):
                 "password": password_field.value,
                 "database": db_type_field.value
             }
-            if save_check.value: # Save credentials
+            if save_check.value:
                 credentials.save_credentials(page, usr_credentials)
-            else: # Clear saved credentials
+            else:
                 credentials.save_credentials(page, None)
             con_db(usr_credentials)
-    
+        
     page.title = "Interface de Bancos de Dados"
     page.window_height = 720
     page.window_width = 1280
@@ -97,7 +124,7 @@ def main(page: ft.Page):
             "database": ""
         }
 
-    # Create text fields for the database credentials
+    # Campos de login
     host_field = ft.TextField(
         label="Host",
         value=last_credentials["host"]
