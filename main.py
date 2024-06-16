@@ -19,15 +19,18 @@ def on_con_button_click(event):
 
 def main(page: ft.Page):
     page.title = "Database Interface"
-    page.window_height = 780
-    page.window_width = 355
+    page.window_height = 720
+    page.window_width = 1280
     page.theme_mode = 'LIGHT'
 
-    host = "localhost"
-
-    last_credentials = {"user":None,"password":None}#credentials.get_credentials(page)
+    last_credentials = credentials.get_credentials(page)
 
     # Create text fields for the database credentials
+    host_field = ft.TextField(
+        label="Host",
+        value=last_credentials["host"]
+    )
+
     user_field = ft.TextField(
         label="Usuário",
         value=last_credentials["user"]
@@ -52,6 +55,7 @@ def main(page: ft.Page):
             ft.dropdown.Option("PostgreSQL")
         ],
         autofocus=True,
+        value=last_credentials["database"]
     )
 
     con_button = ft.ElevatedButton(text="Conectar")
@@ -59,6 +63,13 @@ def main(page: ft.Page):
     # Set the button click event handler
     #con_button.on_click(on_con_button_click)
 
-    page.add(user_field, password_field, check_field, db_field, con_button)
+    page.add(
+        host_field,
+        user_field,
+        password_field,
+        check_field,
+        db_field,
+        con_button
+    )
 
 ft.app(target=main)

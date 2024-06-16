@@ -8,24 +8,27 @@ from cryptography.fernet import Fernet
 def get_key(page):
     if page.client_storage.get("key") is None:
         key = Fernet.generate_key()
-        page.client_storage.set("key", key.decode())
+        Fernet(key)
+        page.client_storage.set("key", key)
     else:
-        key = bytes(page.client_storage.get("key"), 'utf-8')
-    return Fernet(key)
+        key = page.client_storage.get("key")
+    return key
 
 def get_credentials(page):
     cipher_suite = get_key(page)
 
     if page.client_storage.get("credentials") is None:
         credentials = {
-            "user": "",
-            "password": ""
+            "host": None,
+            "user": None,
+            "password": None,
+            "database": None
         }
     else:
-        cipher_text = bytes(page.client_storage.get("credentials"), 'utf-8')
+        cipher_text = page.client_storage.get("credentials")
         credentials = json.loads(cipher_suite.decrypt(cipher_text))
     return credentials
 
 def save_credentials(page, usr_credentials):
-    cipher_text = get_key(page).encrypt(json.dumps(usr_credentials).encode())
-    page.client_storage.set("credentials", cipher_text.decodee())
+    cipher_text = get_key(page).encrypt(json.dumps(usr_credentials))
+    page.client_storage.set("credentials", cipher_text)
