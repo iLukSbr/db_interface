@@ -14,7 +14,8 @@ def draw_table_view(page, usr_credentials, con):
         try:
             cursor = con.cursor()
             if usr_credentials["database"] == "MySQL":
-                cursor.execute(f"USE {db_name};SHOW TABLES;")
+                cursor.execute(f"USE {db_name};")
+                cursor.execute("SHOW TABLES;")
             elif usr_credentials["database"] == "PostgreSQL":
                 cursor.execute(f"SELECT tablename FROM pg_catalog.pg_tables where schemaname='{db_name}' ORDER By tablename ASC;")
             tables = cursor.fetchall()
@@ -71,27 +72,47 @@ def draw_table_view(page, usr_credentials, con):
     
     # Uma tabela foi escolhida
     def table_selected(e, db_name):
-        display_action(f"Carregando a tabela {e.control.value}", page)
+        limit_field = ft.TextField(
+            label="Quantidade máxima de registros",
+            value="1000"
+        )
+        load_table(e, db_name, limit_field)
+   
+    def load_table(table_selection_evt, db_name, limit_field):
+        def on_limit_button_click(e, table_selection_evt, db_name, limit_field):
+            load_table(table_selection_evt, db_name, limit_field)
+
+        display_action(f"Carregando a tabela {table_selection_evt.control.value}", page)
         try:
             cursor = con.cursor()
-            cursor.execute(f"SELECT * FROM {e.control.value};")
+            cursor.execute(f"SELECT * FROM {table_selection_evt.control.value} LIMIT {limit_field.value};")
             table = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
         except Exception as e:
             display_action(e, page)
         table_display = ft.DataTable(
             columns=[ft.DataColumn(ft.Text(name)) for name in column_names],
-            rows=[ft.DataRow(cells=[ft.DataCell(ft.Text(str(value))) for value in row]) for row in table]
+            rows=[ft.DataRow(cells=[ft.DataCell(ft.Text(str(value))) for value in row]) for row in table],
         )
-        table_selector = gen_tables_list(db_name, e.control.value)
+        scroll_tab = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True)
+        scroll_tab.controls.append(table_display)
+        table_selector = gen_tables_list(db_name, table_selection_evt.control.value)
         db_selector = gen_db_list(db_name)
+
+        limit_button = ft.ElevatedButton(
+            text="Limitar",
+            on_click=lambda button_evt: on_limit_button_click(button_evt, table_selection_evt, db_name, limit_field)
+        )
+
         if db_name:
             table_view = ft.View(
                 "/table",[
                     menubar,
                     db_selector,
                     table_selector,
-                    table_display
+                    limit_field,
+                    limit_button,
+                    scroll_tab
                 ]
             )
             page.views.pop()

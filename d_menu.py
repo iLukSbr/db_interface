@@ -51,17 +51,6 @@ def menu_bar(p, con):
                 ]
             ),
             ft.SubmenuButton(
-                content=ft.Text("Editar"),
-                controls=[
-                    ft.MenuItemButton(
-                        content=ft.Text("Limite de registros"),
-                        leading=ft.Icon(ft.icons.FORMAT_LIST_NUMBERED),
-                        style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
-                        on_click=handle_limit_click
-                    )
-                ]
-            ),
-            ft.SubmenuButton(
                 content=ft.Text("Ferramentas"),
                 controls=[
                     ft.MenuItemButton(
@@ -104,13 +93,6 @@ def handle_save_json_click(e):
     display_action(e.control.content.value, page)
     page.views.pop()
     pass
-
-def handle_limit_click(e):
-    global page
-    display_action(e.control.content.value, page)
-    page.views.pop()
-    pass
-
 def handle_tree_click(e):
     global page
     display_action(e.control.content.value, page)
