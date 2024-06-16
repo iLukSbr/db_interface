@@ -1,132 +1,19 @@
+# Bibliotecas
 import pymysql as my
 import psycopg2 as pg
 import flet as ft
 import platform
 
-import credentials
+# Funções
+from d_credentials import *
+from d_menu import *
+from d_messages import *
+from d_tree import *
+from d_table import *
+from d_save import *
 
 global page
 global usr_credentials
-
-# Mensagem na tela
-def banner(text):
-    # Ação do botão OK
-    def close_banner(e):
-        page.banner.open = False
-        page.update()
-
-    page.banner = ft.Banner(
-        bgcolor=ft.colors.AMBER_100,
-        content=ft.Text(
-            text,
-            text_align="CENTER"
-        ),
-        actions=[
-            ft.TextButton("OK", on_click=close_banner)
-        ],
-    )
-    page.banner.open = True
-    page.update()
-
-def menu_bar():
-    menubar = ft.MenuBar(
-        expand=True,
-        style=ft.MenuStyle(
-            alignment=ft.alignment.top_left,
-            bgcolor=ft.colors.RED_100,
-            mouse_cursor={
-                ft.MaterialState.HOVERED: ft.MouseCursor.WAIT,
-                ft.MaterialState.DEFAULT: ft.MouseCursor.ZOOM_OUT
-            },
-        ),
-        controls=[
-            ft.SubmenuButton(
-                content=ft.Text("Arquivo"),
-                controls=[
-                    ft.MenuItemButton(
-                        content=ft.Text("Salvar como .csv"),
-                        leading=ft.Icon(ft.icons.SAVE_AS_OUTLINED),
-                        style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
-                        on_click=handle_save_csv_click
-                    ),
-                    ft.MenuItemButton(
-                        content=ft.Text("Salvar como .json"),
-                        leading=ft.Icon(ft.icons.SAVE_AS_SHARP),
-                        style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
-                        on_click=handle_save_json_click
-                    ),
-                    ft.MenuItemButton(
-                        content=ft.Text("Desconectar"),
-                        leading=ft.Icon(ft.icons.CLOSE),
-                        style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
-                        on_click=handle_disconnect_click
-                    )
-                ]
-            ),
-            ft.SubmenuButton(
-                content=ft.Text("Editar"),
-                controls=[
-                    ft.MenuItemButton(
-                        content=ft.Text("Limite de registros"),
-                        leading=ft.Icon(ft.icons.FORMAT_LIST_NUMBERED),
-                        style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
-                        on_click=handle_limit_click
-                    )
-                ]
-            ),
-            ft.SubmenuButton(
-                content=ft.Text("Ferramentas"),
-                controls=[
-                    ft.MenuItemButton(
-                        content=ft.Text("Árvore de Tabelas"),
-                        leading=ft.Icon(ft.icons.ACCOUNT_TREE_OUTLINED),
-                        style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
-                        on_click=handle_tree_click
-                    ),
-                    ft.MenuItemButton(
-                        content=ft.Text("Tabela de Dados"),
-                        leading=ft.Icon(ft.icons.DATASET_OUTLINED),
-                        style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
-                        on_click=handle_table_click
-                    )
-                ]
-            )
-        ]
-    )
-    return ft.Row([menubar])
-
-def handle_disconnect_click(e):
-    display_action(e)
-    page.views.pop()
-    page.go("/")
-    try:
-        if con:
-            con.close()
-    except Exception as e:
-        banner(e)
-
-def display_action(e):
-    page.show_snack_bar(ft.SnackBar(content=ft.Text(f"{e.control.content.value}")))
-
-def handle_save_csv_click(e):
-    display_action(e)
-    pass
-
-def handle_save_json_click(e):
-    display_action(e)
-    pass
-
-def handle_limit_click(e):
-    display_action(e)
-    pass
-
-def handle_tree_click(e):
-    display_action(e)
-    pass
-
-def handle_table_click(e):
-    display_action(e)
-    pass
 
 # Lista dos bancos de dados disponíveis
 def draw_select_db_page():
@@ -134,7 +21,7 @@ def draw_select_db_page():
     def db_changed(e):
         # Tabela foi selecionada
         def table_changed(e):
-            banner(f"Carregando a tabela {table_field.value}")
+            banner(f"Carregando a tabela {table_field.value}", page)
             cursor = con.cursor()
             cursor.execute(f"SELECT * FROM {table_field.value};")
             table = cursor.fetchall()
@@ -172,10 +59,10 @@ def draw_select_db_page():
                 )
                 for table in tables:
                     table_field.options.append(ft.dropdown.Option(table[0]))
-                page.add(menu_bar(), table_field)
+                page.add(menu_bar(page, con), table_field)
                 page.update()
             except Exception as e:
-                 banner(e)
+                 banner(e, page)
 
     try:
         cursor = con.cursor()
@@ -191,13 +78,13 @@ def draw_select_db_page():
         for database in databases:
             db_field.options.append(ft.dropdown.Option(database[0]))
         db_view = ft.View("/db",[
-            menu_bar(),
+            menu_bar(page, con),
             db_field
         ])
         page.views.append(db_view)
         page.go("/db")
     except Exception as e:
-        banner(e)
+        banner(e, page)
         
 # Conectar ao gerenciador de bancos de dados
 def con_db(usr_credentials):
@@ -214,10 +101,10 @@ def con_db(usr_credentials):
             user=usr_credentials["user"],
             password=usr_credentials["password"]
         )
-        banner("Conexão realizada com sucesso.")
+        banner("Conexão realizada com sucesso.", page)
         draw_select_db_page()
     except Exception as e:
-        banner(e)
+        banner(e, page)
 
 # Página inicial
 def main(p: ft.Page):
@@ -237,7 +124,7 @@ def main(p: ft.Page):
         global page
         global usr_credentials
         if not user_field.value or not password_field.value or not db_type_field.value:
-            banner("Os campos usuário, senha e banco de dados devem estar preenchidos.")
+            banner("Os campos usuário, senha e banco de dados devem estar preenchidos.", page)
         else:
             if not host_field.value or not port_field.value:
                 host_field.value = "localhost"
@@ -254,9 +141,9 @@ def main(p: ft.Page):
                 "database": db_type_field.value
             }
             if save_check.value:
-                credentials.save_credentials(page, usr_credentials)
+                save_credentials(page, usr_credentials)
             else:
-                credentials.save_credentials(page, None)
+                save_credentials(page, None)
             con_db(usr_credentials)
         
     page.title = "Interface de Bancos de Dados"
@@ -264,7 +151,7 @@ def main(p: ft.Page):
     page.window_width = 1280
     page.theme_mode = 'LIGHT'
 
-    last_credentials = credentials.get_credentials(page)
+    last_credentials = get_credentials(page)
 
     if not last_credentials:
         last_credentials = {
