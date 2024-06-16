@@ -1,6 +1,9 @@
 import flet as ft
+import pymysql as my
+import psycopg2 as pg
 
 from d_messages import *
+from d_save import *
 
 global page
 
@@ -22,22 +25,22 @@ def menu_bar(p, con):
                 content=ft.Text("Arquivo"),
                 controls=[
                     ft.MenuItemButton(
-                        content=ft.Text("Salvar como .csv"),
+                        content=ft.Text("Exportar como .csv"),
                         leading=ft.Icon(ft.icons.SAVE_AS_OUTLINED),
                         style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
                         on_click=handle_save_csv_click
                     ),
                     ft.MenuItemButton(
-                        content=ft.Text("Salvar como .json"),
+                        content=ft.Text("Exportar como .json"),
                         leading=ft.Icon(ft.icons.SAVE_AS_SHARP),
                         style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
                         on_click=handle_save_json_click
                     ),
                     ft.MenuItemButton(
-                        content=ft.Text("Desconectar"),
-                        leading=ft.Icon(ft.icons.CLOSE),
+                        content=ft.Text("Exportar como .svg"),
+                        leading=ft.Icon(ft.icons.SAVE),
                         style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
-                        on_click=lambda e: handle_disconnect_click(e, con)
+                        on_click=handle_save_json_click
                     )
                 ]
             ),
@@ -72,33 +75,54 @@ def menu_bar(p, con):
         ]
     )
     return ft.Row([menubar])
+    
+def disconnect_button(con):
+    global page
+    return ft.MenuItemButton(
+        content=ft.Text("Desconectar"),
+        leading=ft.Icon(ft.icons.CLOSE),
+        style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
+        on_click=lambda e: handle_disconnect_click(e, con)
+    )
 
 def handle_disconnect_click(e, con):
-    display_action(e, page)
+    global page
+    display_action(e.control.content.value, page)
     page.views.pop()
     page.go("/")
     try:
         if con:
             con.close()
     except Exception as e:
-        banner(e, page)
+        display_action(e, page)
 
 def handle_save_csv_click(e):
-    display_action(e, page)
+    global page
+    display_action(e.control.content.value, page)
+    page.views.pop()
     pass
 
 def handle_save_json_click(e):
-    display_action(e, page)
+    global page
+    display_action(e.control.content.value, page)
+    page.views.pop()
     pass
 
 def handle_limit_click(e):
-    display_action(e, page)
+    global page
+    display_action(e.control.content.value, page)
+    page.views.pop()
     pass
 
 def handle_tree_click(e):
-    display_action(e, page)
+    global page
+    display_action(e.control.content.value, page)
+    page.views.pop()
     pass
 
 def handle_table_click(e):
-    display_action(e, page)
+    global page
+    display_action(e.control.content.value, page)
+    page.views.pop()
+    
     pass
