@@ -10,7 +10,7 @@ def erd_generator(usr_credentials, db_name, page):
         output_file = os.path.join(os.getcwd(), 'schema.sql')
 
         if usr_credentials["database"] == "MySQL":
-            command = f'mysqldump -u {usr_credentials["user"]} -p {usr_credentials["password"]} --no-data {db_name} > {output_file}'
+            command = f'mysqldump -u {usr_credentials["user"]} -p{usr_credentials["password"]} --no-data {db_name} > {output_file}'
             js_file = os.path.join(os.getcwd(), 'mysql2dbml.js')
         elif usr_credentials["database"] == "PostgreSQL":
             os.environ['PGPASSWORD'] = usr_credentials["password"]

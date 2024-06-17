@@ -1,406 +1,432 @@
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 16.2
--- Dumped by pg_dump version 16.2
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
---
-
-
-
---
-
-
-
---
--- Name: advisor; Type: TABLE; Schema: university; Owner: -
---
-
-CREATE TABLE university.advisor (
-    s_id character varying(5) NOT NULL,
-    i_id character varying(5)
-);
-
-
---
--- Name: classroom; Type: TABLE; Schema: university; Owner: -
---
-
-CREATE TABLE university.classroom (
-    building character varying(15) NOT NULL,
-    room_number character varying(7) NOT NULL,
-    capacity numeric(4,0)
-);
-
-
---
--- Name: course; Type: TABLE; Schema: university; Owner: -
---
-
-CREATE TABLE university.course (
-    course_id character varying(8) NOT NULL,
-    title character varying(50),
-    dept_name character varying(20),
-    credits numeric(2,0),
-    CONSTRAINT course_credits_check CHECK ((credits > (0)::numeric))
-);
-
-
---
--- Name: department; Type: TABLE; Schema: university; Owner: -
---
-
-CREATE TABLE university.department (
-    dept_name character varying(20) NOT NULL,
-    building character varying(15),
-    budget numeric(12,2),
-    CONSTRAINT department_budget_check CHECK ((budget > (0)::numeric))
-);
-
-
---
--- Name: instructor; Type: TABLE; Schema: university; Owner: -
---
-
-CREATE TABLE university.instructor (
-    id character varying(5) NOT NULL,
-    name character varying(20) NOT NULL,
-    dept_name character varying(20),
-    salary numeric(8,2),
-    CONSTRAINT instructor_salary_check CHECK ((salary > (29000)::numeric))
-);
-
-
---
--- Name: prereq; Type: TABLE; Schema: university; Owner: -
---
-
-CREATE TABLE university.prereq (
-    course_id character varying(8) NOT NULL,
-    prereq_id character varying(8) NOT NULL
-);
-
-
---
--- Name: section; Type: TABLE; Schema: university; Owner: -
---
-
-CREATE TABLE university.section (
-    course_id character varying(8) NOT NULL,
-    sec_id character varying(8) NOT NULL,
-    semester character varying(6) NOT NULL,
-    year numeric(4,0) NOT NULL,
-    building character varying(15),
-    room_number character varying(7),
-    time_slot_id character varying(4),
-    CONSTRAINT section_semester_check CHECK (((semester)::text = ANY ((ARRAY['Fall'::character varying, 'Winter'::character varying, 'Spring'::character varying, 'Summer'::character varying])::text[]))),
-    CONSTRAINT section_year_check CHECK (((year > (1701)::numeric) AND (year < (2100)::numeric)))
-);
-
-
---
--- Name: student; Type: TABLE; Schema: university; Owner: -
---
-
-CREATE TABLE university.student (
-    id character varying(5) NOT NULL,
-    name character varying(20) NOT NULL,
-    dept_name character varying(20),
-    tot_cred numeric(3,0),
-    CONSTRAINT student_tot_cred_check CHECK ((tot_cred >= (0)::numeric))
-);
-
-
---
--- Name: takes; Type: TABLE; Schema: university; Owner: -
---
-
-CREATE TABLE university.takes (
-    id character varying(5) NOT NULL,
-    course_id character varying(8) NOT NULL,
-    sec_id character varying(8) NOT NULL,
-    semester character varying(6) NOT NULL,
-    year numeric(4,0) NOT NULL,
-    grade character varying(2)
-);
-
-
---
--- Name: teaches; Type: TABLE; Schema: university; Owner: -
---
-
-CREATE TABLE university.teaches (
-    id character varying(5) NOT NULL,
-    course_id character varying(8) NOT NULL,
-    sec_id character varying(8) NOT NULL,
-    semester character varying(6) NOT NULL,
-    year numeric(4,0) NOT NULL
-);
-
-
---
--- Name: test; Type: VIEW; Schema: university; Owner: -
---
-
-CREATE VIEW university.test AS
- SELECT oid,
-    typname,
-    typnamespace,
-    typowner,
-    typlen,
-    typbyval,
-    typtype,
-    typcategory,
-    typispreferred,
-    typisdefined,
-    typdelim,
-    typrelid,
-    typsubscript,
-    typelem,
-    typarray,
-    typinput,
-    typoutput,
-    typreceive,
-    typsend,
-    typmodin,
-    typmodout,
-    typanalyze,
-    typalign,
-    typstorage,
-    typnotnull,
-    typbasetype,
-    typtypmod,
-    typndims,
-    typcollation,
-    typdefaultbin,
-    typdefault,
-    typacl
-   FROM pg_type;
-
-
---
--- Name: time_slot; Type: TABLE; Schema: university; Owner: -
---
-
-CREATE TABLE university.time_slot (
-    time_slot_id character varying(4) NOT NULL,
-    day character varying(1) NOT NULL,
-    start_hr numeric(2,0) NOT NULL,
-    start_min numeric(2,0) NOT NULL,
-    end_hr numeric(2,0),
-    end_min numeric(2,0),
-    CONSTRAINT time_slot_end_hr_check CHECK (((end_hr >= (0)::numeric) AND (end_hr < (24)::numeric))),
-    CONSTRAINT time_slot_end_min_check CHECK (((end_min >= (0)::numeric) AND (end_min < (60)::numeric))),
-    CONSTRAINT time_slot_start_hr_check CHECK (((start_hr >= (0)::numeric) AND (start_hr < (24)::numeric))),
-    CONSTRAINT time_slot_start_min_check CHECK (((start_min >= (0)::numeric) AND (start_min < (60)::numeric)))
-);
-
-
---
--- Name: advisor advisor_pkey; Type: CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.advisor
-    ADD CONSTRAINT advisor_pkey PRIMARY KEY (s_id);
-
-
---
--- Name: classroom classroom_pkey; Type: CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.classroom
-    ADD CONSTRAINT classroom_pkey PRIMARY KEY (building, room_number);
-
-
---
--- Name: course course_pkey; Type: CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.course
-    ADD CONSTRAINT course_pkey PRIMARY KEY (course_id);
-
-
---
--- Name: department department_pkey; Type: CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.department
-    ADD CONSTRAINT department_pkey PRIMARY KEY (dept_name);
-
-
---
--- Name: instructor instructor_pkey; Type: CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.instructor
-    ADD CONSTRAINT instructor_pkey PRIMARY KEY (id);
-
-
---
--- Name: prereq prereq_pkey; Type: CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.prereq
-    ADD CONSTRAINT prereq_pkey PRIMARY KEY (course_id, prereq_id);
-
-
---
--- Name: section section_pkey; Type: CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.section
-    ADD CONSTRAINT section_pkey PRIMARY KEY (course_id, sec_id, semester, year);
-
-
---
--- Name: student student_pkey; Type: CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.student
-    ADD CONSTRAINT student_pkey PRIMARY KEY (id);
-
-
---
--- Name: takes takes_pkey; Type: CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.takes
-    ADD CONSTRAINT takes_pkey PRIMARY KEY (id, course_id, sec_id, semester, year);
-
-
---
--- Name: teaches teaches_pkey; Type: CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.teaches
-    ADD CONSTRAINT teaches_pkey PRIMARY KEY (id, course_id, sec_id, semester, year);
-
-
---
--- Name: time_slot time_slot_pkey; Type: CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.time_slot
-    ADD CONSTRAINT time_slot_pkey PRIMARY KEY (time_slot_id, day, start_hr, start_min);
-
-
---
--- Name: advisor advisor_i_id_fkey; Type: FK CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.advisor
-    ADD CONSTRAINT advisor_i_id_fkey FOREIGN KEY (i_id) REFERENCES university.instructor(id) ON DELETE SET NULL;
-
-
---
--- Name: advisor advisor_s_id_fkey; Type: FK CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.advisor
-    ADD CONSTRAINT advisor_s_id_fkey FOREIGN KEY (s_id) REFERENCES university.student(id) ON DELETE CASCADE;
-
-
---
--- Name: course course_dept_name_fkey; Type: FK CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.course
-    ADD CONSTRAINT course_dept_name_fkey FOREIGN KEY (dept_name) REFERENCES university.department(dept_name) ON DELETE SET NULL;
-
-
---
--- Name: instructor instructor_dept_name_fkey; Type: FK CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.instructor
-    ADD CONSTRAINT instructor_dept_name_fkey FOREIGN KEY (dept_name) REFERENCES university.department(dept_name) ON DELETE SET NULL;
-
-
---
--- Name: prereq prereq_course_id_fkey; Type: FK CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.prereq
-    ADD CONSTRAINT prereq_course_id_fkey FOREIGN KEY (course_id) REFERENCES university.course(course_id) ON DELETE CASCADE;
-
-
---
--- Name: prereq prereq_prereq_id_fkey; Type: FK CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.prereq
-    ADD CONSTRAINT prereq_prereq_id_fkey FOREIGN KEY (prereq_id) REFERENCES university.course(course_id);
-
-
---
--- Name: section section_building_room_number_fkey; Type: FK CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.section
-    ADD CONSTRAINT section_building_room_number_fkey FOREIGN KEY (building, room_number) REFERENCES university.classroom(building, room_number) ON DELETE SET NULL;
-
-
---
--- Name: section section_course_id_fkey; Type: FK CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.section
-    ADD CONSTRAINT section_course_id_fkey FOREIGN KEY (course_id) REFERENCES university.course(course_id) ON DELETE CASCADE;
-
-
---
--- Name: student student_dept_name_fkey; Type: FK CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.student
-    ADD CONSTRAINT student_dept_name_fkey FOREIGN KEY (dept_name) REFERENCES university.department(dept_name) ON DELETE SET NULL;
-
-
---
--- Name: takes takes_course_id_sec_id_semester_year_fkey; Type: FK CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.takes
-    ADD CONSTRAINT takes_course_id_sec_id_semester_year_fkey FOREIGN KEY (course_id, sec_id, semester, year) REFERENCES university.section(course_id, sec_id, semester, year) ON DELETE CASCADE;
-
-
---
--- Name: takes takes_id_fkey; Type: FK CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.takes
-    ADD CONSTRAINT takes_id_fkey FOREIGN KEY (id) REFERENCES university.student(id) ON DELETE CASCADE;
-
-
---
--- Name: teaches teaches_course_id_sec_id_semester_year_fkey; Type: FK CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.teaches
-    ADD CONSTRAINT teaches_course_id_sec_id_semester_year_fkey FOREIGN KEY (course_id, sec_id, semester, year) REFERENCES university.section(course_id, sec_id, semester, year) ON DELETE CASCADE;
-
-
---
--- Name: teaches teaches_id_fkey; Type: FK CONSTRAINT; Schema: university; Owner: -
---
-
-ALTER TABLE ONLY university.teaches
-    ADD CONSTRAINT teaches_id_fkey FOREIGN KEY (id) REFERENCES university.instructor(id) ON DELETE CASCADE;
-
-
---
--- PostgreSQL database dump complete
---
-
+-- MySQL dump 10.13  Distrib 8.3.0, for Win64 (x86_64)
+--
+-- Host: localhost    Database: materiais_de_construcao
+-- ------------------------------------------------------
+-- Server version	8.3.0
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `clientes`
+--
+
+DROP TABLE IF EXISTS `clientes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `clientes` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_endereco_primario` int NOT NULL,
+  `id_endereco_secundario` int DEFAULT NULL,
+  `foto` blob,
+  `nome` varchar(255) NOT NULL,
+  `sobrenome` varchar(255) NOT NULL,
+  `nome_social` varchar(255) DEFAULT NULL,
+  `genero` varchar(255) DEFAULT NULL,
+  `estado_civil` varchar(255) DEFAULT NULL,
+  `profissao` varchar(255) DEFAULT NULL,
+  `razao_social_empresa` varchar(255) DEFAULT NULL,
+  `cnpj` int DEFAULT NULL,
+  `data_de_nascimento` date NOT NULL,
+  `nacionalidade` varchar(255) DEFAULT NULL,
+  `raca` enum('branca','preta','parda','indígena','amarela') DEFAULT NULL,
+  `cpf` int NOT NULL,
+  `data_de_emissao` date NOT NULL,
+  `orgao_expedidor` varchar(255) NOT NULL,
+  `numero_do_cartao_bancario` int DEFAULT NULL,
+  `validade_do_cartao_bancario` date DEFAULT NULL,
+  `cvv` int DEFAULT NULL,
+  `credito` tinyint(1) DEFAULT NULL,
+  `telefone_primario` int NOT NULL,
+  `telefone_secundario` int DEFAULT NULL,
+  `e_mail` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `enderecos`
+--
+
+DROP TABLE IF EXISTS `enderecos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `enderecos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_cliente` int NOT NULL,
+  `rua` varchar(255) NOT NULL,
+  `numero` varchar(255) NOT NULL,
+  `complemento` varchar(255) DEFAULT NULL,
+  `bairro` varchar(255) NOT NULL,
+  `cidade` varchar(255) NOT NULL,
+  `estado` varchar(255) NOT NULL,
+  `pais` varchar(255) NOT NULL,
+  `cep` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `fotos`
+--
+
+DROP TABLE IF EXISTS `fotos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `fotos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_produto` int NOT NULL,
+  `foto` blob NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `links_externos`
+--
+
+DROP TABLE IF EXISTS `links_externos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `links_externos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_produto` int NOT NULL,
+  `link_externo` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `manuais`
+--
+
+DROP TABLE IF EXISTS `manuais`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `manuais` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_produto` int NOT NULL,
+  `manual` blob NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pedidos`
+--
+
+DROP TABLE IF EXISTS `pedidos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `pedidos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_venda` int NOT NULL,
+  `id_produto` int NOT NULL,
+  `quantidade` int NOT NULL,
+  `desconto` double DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`),
+  KEY `id_venda` (`id_venda`),
+  KEY `id_produto` (`id_produto`),
+  CONSTRAINT `pedidos_ibfk_1` FOREIGN KEY (`id_venda`) REFERENCES `vendas` (`id`),
+  CONSTRAINT `pedidos_ibfk_2` FOREIGN KEY (`id_produto`) REFERENCES `produtos` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `precos`
+--
+
+DROP TABLE IF EXISTS `precos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `precos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_produto` int NOT NULL,
+  `preco` double NOT NULL,
+  `data_hora_de_inicio` datetime NOT NULL,
+  `data_hora_de_termino` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `produtos`
+--
+
+DROP TABLE IF EXISTS `produtos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `produtos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_subtipo` int NOT NULL,
+  `estoque` int NOT NULL,
+  `peso` double NOT NULL,
+  `tamanho_da_caixa_x` double NOT NULL,
+  `tamanho_da_caixa_y` double NOT NULL,
+  `tamanho_da_caixa_z` double NOT NULL,
+  `maximo_de_caixas_empilhadas` int NOT NULL,
+  `fragil` tinyint(1) NOT NULL,
+  `perigoso` tinyint(1) NOT NULL,
+  `validade` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `subtipos`
+--
+
+DROP TABLE IF EXISTS `subtipos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `subtipos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_tipo` int NOT NULL,
+  `subtipo` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tipos`
+--
+
+DROP TABLE IF EXISTS `tipos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tipos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tipo` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `vendas`
+--
+
+DROP TABLE IF EXISTS `vendas`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `vendas` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_cliente` int NOT NULL,
+  `id_endereco` int NOT NULL,
+  `modo_de_pagamento` enum('boleto','pix','transferencia','cartao_de_credito','cartao_de_debito') DEFAULT NULL,
+  `quantidade_de_parcelas` int NOT NULL,
+  `juros` double DEFAULT NULL,
+  `dia_de_vencimento` int DEFAULT NULL,
+  `data_do_primeiro_vencimento` date NOT NULL,
+  `data_hora_da_venda` datetime NOT NULL,
+  `data_hora_de_entrega` datetime NOT NULL,
+  `condicoes` text,
+  `nota_fiscal` blob NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`),
+  KEY `id_cliente` (`id_cliente`),
+  KEY `id_endereco` (`id_endereco`),
+  CONSTRAINT `vendas_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id`),
+  CONSTRAINT `vendas_ibfk_2` FOREIGN KEY (`id_endereco`) REFERENCES `enderecos` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `videos`
+--
+
+DROP TABLE IF EXISTS `videos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `videos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_produto` int NOT NULL,
+  `video` blob NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volume_vendas_diario`
+--
+
+DROP TABLE IF EXISTS `volume_vendas_diario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `volume_vendas_diario` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `quantidade` int NOT NULL,
+  `dia` date DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volume_vendas_diario_estadual`
+--
+
+DROP TABLE IF EXISTS `volume_vendas_diario_estadual`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `volume_vendas_diario_estadual` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `quantidade` int NOT NULL,
+  `dia` date DEFAULT NULL,
+  `estado` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volume_vendas_diario_municipal`
+--
+
+DROP TABLE IF EXISTS `volume_vendas_diario_municipal`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `volume_vendas_diario_municipal` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `quantidade` int NOT NULL,
+  `dia` date DEFAULT NULL,
+  `municipio` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volume_vendas_mensal`
+--
+
+DROP TABLE IF EXISTS `volume_vendas_mensal`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `volume_vendas_mensal` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `quantidade` int NOT NULL,
+  `mes` int DEFAULT NULL,
+  `ano` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volume_vendas_mensal_estadual`
+--
+
+DROP TABLE IF EXISTS `volume_vendas_mensal_estadual`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `volume_vendas_mensal_estadual` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `quantidade` int NOT NULL,
+  `mes` int DEFAULT NULL,
+  `ano` int DEFAULT NULL,
+  `estado` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volume_vendas_mensal_municipal`
+--
+
+DROP TABLE IF EXISTS `volume_vendas_mensal_municipal`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `volume_vendas_mensal_municipal` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `quantidade` int NOT NULL,
+  `mes` int DEFAULT NULL,
+  `ano` int DEFAULT NULL,
+  `municipio` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volume_vendas_semanal`
+--
+
+DROP TABLE IF EXISTS `volume_vendas_semanal`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `volume_vendas_semanal` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `quantidade` int NOT NULL,
+  `semana` int DEFAULT NULL,
+  `ano` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volume_vendas_semanal_estadual`
+--
+
+DROP TABLE IF EXISTS `volume_vendas_semanal_estadual`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `volume_vendas_semanal_estadual` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `quantidade` int NOT NULL,
+  `semana` int DEFAULT NULL,
+  `ano` int DEFAULT NULL,
+  `estado` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `volume_vendas_semanal_municipal`
+--
+
+DROP TABLE IF EXISTS `volume_vendas_semanal_municipal`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `volume_vendas_semanal_municipal` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `quantidade` int NOT NULL,
+  `semana` int DEFAULT NULL,
+  `ano` int DEFAULT NULL,
+  `municipio` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2024-06-17  3:35:23

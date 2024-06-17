@@ -33,18 +33,62 @@ def main(page: ft.Page):
                 elif db_type_field.value == "PostgreSQL":
                     port_field.value = "5432"
                 page.update()
-            usr_credentials = {
-                "host": host_field.value,
-                "port": port_field.value,
-                "user": user_field.value,
-                "password": password_field.value,
-                "database": db_type_field.value
-            }
+            if(db_type_field.value == "PostgreSQL"):
+                usr_credentials = {
+                    "host": host_field.value,
+                    "port": port_field.value,
+                    "user": user_field.value,
+                    "password": password_field.value,
+                    "database": db_type_field.value,
+                    "pg_database": db_postgres_field.value
+                }
+            else:
+                usr_credentials = {
+                    "host": host_field.value,
+                    "port": port_field.value,
+                    "user": user_field.value,
+                    "password": password_field.value,
+                    "database": db_type_field.value
+                }
             if save_check.value:
                 save_credentials(page, usr_credentials)
             else:
                 save_credentials(page, None)
             con_db(usr_credentials, page)
+
+    def postgres_selected(is_selected):
+        if page.views[-1].route == "/":
+            page.views.pop()
+        if db_type_field.value == "PostgreSQL" or is_selected:
+            home = ft.View("/", [
+                host_field,
+                port_field,
+                user_field,
+                password_field,
+                save_check,
+                db_type_field,
+                db_postgres_field,
+                con_button
+            ])
+        else:
+            home = ft.View("/", [
+                host_field,
+                port_field,
+                user_field,
+                password_field,
+                save_check,
+                db_type_field,
+                con_button
+            ])
+        page.views.append(home)
+        page.update()
+        page.go("/")
+    
+    def on_type_field_change(e):
+        if db_type_field.value == "PostgreSQL":
+            postgres_selected(True)
+        else:
+            postgres_selected(False)
         
     page.title = "Interface de Bancos de Dados"
     page.window_height = 720
@@ -97,24 +141,20 @@ def main(page: ft.Page):
             ft.dropdown.Option("PostgreSQL")
         ],
         autofocus=True,
-        value=last_credentials["database"]
+        value=last_credentials["database"],
+        on_change=on_type_field_change
     )
-
+    
     con_button = ft.ElevatedButton(
         text="Conectar",
         on_click=on_con_button_click
     )
 
-    home = ft.View("/", [
-        host_field,
-        port_field,
-        user_field,
-        password_field,
-        save_check,
-        db_type_field,
-        con_button
-    ])
-    page.views.append(home)
-    page.go("/")
+    db_postgres_field = ft.TextField(
+        label="Banco de dados do PostgreSQL",
+        value="postgres"
+    )
+
+    postgres_selected(False)
 
 ft.app(target=main)

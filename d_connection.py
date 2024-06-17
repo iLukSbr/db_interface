@@ -11,12 +11,21 @@ def con_db(usr_credentials, page):
     }
     connect = connect_functions.get(usr_credentials["database"])
     try:
-        con = connect(
-            host=usr_credentials["host"],
-            port=int(usr_credentials["port"]),
-            user=usr_credentials["user"],
-            password=usr_credentials["password"]
-        )
+        if usr_credentials["database"] == "PostgreSQL":
+            con = connect(
+                host=usr_credentials["host"],
+                port=int(usr_credentials["port"]),
+                user=usr_credentials["user"],
+                password=usr_credentials["password"],
+                database=usr_credentials["pg_database"]
+            )
+        else:
+            con = connect(
+                host=usr_credentials["host"],
+                port=int(usr_credentials["port"]),
+                user=usr_credentials["user"],
+                password=usr_credentials["password"]
+            )
         display_action("Conexão realizada com sucesso.", page)
         draw_table_view(page, con, usr_credentials)
     except Exception as e:
