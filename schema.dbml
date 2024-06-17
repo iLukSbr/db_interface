@@ -1,0 +1,54 @@
+Table "livros_db"."generos" {
+  "genero_id" smallint [pk, not null]
+  "descricao" "character varying(30)" [not null]
+}
+
+Table "livros_db"."livros" {
+  "livro_id" smallint [pk, not null]
+  "titulo" "character varying(150)" [not null]
+  "autor" "character varying(150)" [not null]
+  "edicao" smallint [not null]
+  "ano" smallint [not null]
+  "editora" "character varying(50)" [not null]
+  "genero_id" smallint [not null]
+  "descricao" "character varying(450)" [not null]
+  "preco" numeric(15,2) [not null]
+  "estoque" smallint [not null]
+  "reserva" smallint [not null]
+  "capa" bytea
+}
+
+Table "livros_db"."pedidos" {
+  "pedido_id" integer [pk, not null]
+  "usuario_id" smallint [not null]
+  "data_pedido" date [not null]
+  "tipo_pag" smallint [not null]
+}
+
+Table "livros_db"."pedidos_detalhe" {
+  "detalhe_id" integer [pk, not null]
+  "pedido_id" bigint [not null]
+  "livro_id" smallint [not null]
+  "qtd" smallint [not null]
+}
+
+Table "livros_db"."usuarios" {
+  "usuario_id" smallint [pk, not null]
+  "nome" "character varying(40)" [not null]
+  "endereco" "character varying(40)"
+  "bairro" "character varying(30)"
+  "cidade" "character varying(30)" [not null]
+  "uf" "character (2)" [not null]
+  "cep" "character (8)" [not null]
+  "fone" "character varying(20)" [not null]
+  "login" "character varying(20)" [not null]
+  "senha" "character varying(20)" [not null]
+}
+
+Ref "livros_genero_id_fkey":"livros_db"."generos"."genero_id" < "livros_db"."livros"."genero_id"
+
+Ref "pedidos_detalhe_livro_id_fkey":"livros_db"."livros"."livro_id" < "livros_db"."pedidos_detalhe"."livro_id"
+
+Ref "pedidos_detalhe_pedido_id_fkey":"livros_db"."pedidos"."pedido_id" < "livros_db"."pedidos_detalhe"."pedido_id"
+
+Ref "pedidos_usuario_id_fkey":"livros_db"."usuarios"."usuario_id" < "livros_db"."pedidos"."usuario_id"

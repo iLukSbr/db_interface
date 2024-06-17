@@ -138,10 +138,14 @@ def handle_save_click(e):
     )
 
 def handle_tree_click(e):
+    from d_tree import draw_tree_view
+
     global page
+
     display_action(e.control.content.value, page)
     page.views.pop()
-    pass
+    page.update()
+    draw_tree_view(page, con, usr_credentials)
 
 def handle_table_click(e):
     from d_table import draw_table_view
