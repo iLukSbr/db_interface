@@ -3,6 +3,7 @@ import pymysql as my
 import psycopg2 as pg
 import os
 import pandas as pd
+import shutil
 
 from d_messages import display_action
 
@@ -88,8 +89,8 @@ def handle_save_click(e):
     current_view = page.views[-1]
     if current_view.route == "/table" or current_view.route == "/query":
         extensions=[
-            ".csv",
-            ".json"
+            "csv",
+            "json"
         ]
         if current_view.route == "/query":
             data, column_list = get_table_query()
@@ -101,7 +102,7 @@ def handle_save_click(e):
         df = pd.DataFrame(data, columns=column_list)
     elif current_view.route == "/tree":
         extensions=[
-            ".svg"
+            "svg"
         ]
     if current_view.route == "/table" and len(page.views[-1].controls) == 6:
         filename = page.views[-1].controls[2].value + ".csv"
@@ -110,24 +111,26 @@ def handle_save_click(e):
     elif current_view.route == "/tree":
         filename = "tree_export.svg"
 
-    def save_file(e):
+    def on_save_file(e):
         filepath = e.path
         if filepath:
-            extension = os.path.splitext(filepath)[1]
+            extension = os.path.splitext(filepath)[1][1:]
             if extension in extensions:
-                if extension == ".csv":
+                if extension == "csv":
                     df.to_csv(filepath,
                         header=True,
                         index=False
                     )
-                elif extension == ".json":
+                elif extension == "json":
                     df.to_json(
                         filepath,
                         orient='records',
                         lines=True
                     )
+                elif extension == "svg":
+                    shutil.copy("schema.svg", filepath)
 
-    save_file_dialog = ft.FilePicker(on_result = save_file)
+    save_file_dialog = ft.FilePicker(on_result = on_save_file)
     page.overlay.append(save_file_dialog)
     page.update()
     save_file_dialog.save_file(

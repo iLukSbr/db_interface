@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.3.0, for Win64 (x86_64)
 --
--- Host: localhost    Database: materiais_de_construcao
+-- Host: localhost    Database: university
 -- ------------------------------------------------------
 -- Server version	8.3.0
 
@@ -16,407 +16,211 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `clientes`
+-- Table structure for table `advisor`
 --
 
-DROP TABLE IF EXISTS `clientes`;
+DROP TABLE IF EXISTS `advisor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `clientes` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_endereco_primario` int NOT NULL,
-  `id_endereco_secundario` int DEFAULT NULL,
-  `foto` blob,
-  `nome` varchar(255) NOT NULL,
-  `sobrenome` varchar(255) NOT NULL,
-  `nome_social` varchar(255) DEFAULT NULL,
-  `genero` varchar(255) DEFAULT NULL,
-  `estado_civil` varchar(255) DEFAULT NULL,
-  `profissao` varchar(255) DEFAULT NULL,
-  `razao_social_empresa` varchar(255) DEFAULT NULL,
-  `cnpj` int DEFAULT NULL,
-  `data_de_nascimento` date NOT NULL,
-  `nacionalidade` varchar(255) DEFAULT NULL,
-  `raca` enum('branca','preta','parda','indígena','amarela') DEFAULT NULL,
-  `cpf` int NOT NULL,
-  `data_de_emissao` date NOT NULL,
-  `orgao_expedidor` varchar(255) NOT NULL,
-  `numero_do_cartao_bancario` int DEFAULT NULL,
-  `validade_do_cartao_bancario` date DEFAULT NULL,
-  `cvv` int DEFAULT NULL,
-  `credito` tinyint(1) DEFAULT NULL,
-  `telefone_primario` int NOT NULL,
-  `telefone_secundario` int DEFAULT NULL,
-  `e_mail` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+CREATE TABLE `advisor` (
+  `s_ID` varchar(5) NOT NULL,
+  `i_ID` varchar(5) DEFAULT NULL,
+  PRIMARY KEY (`s_ID`),
+  KEY `i_ID` (`i_ID`),
+  CONSTRAINT `advisor_ibfk_1` FOREIGN KEY (`i_ID`) REFERENCES `instructor` (`ID`) ON DELETE SET NULL,
+  CONSTRAINT `advisor_ibfk_2` FOREIGN KEY (`s_ID`) REFERENCES `student` (`ID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `enderecos`
+-- Table structure for table `classroom`
 --
 
-DROP TABLE IF EXISTS `enderecos`;
+DROP TABLE IF EXISTS `classroom`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `enderecos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_cliente` int NOT NULL,
-  `rua` varchar(255) NOT NULL,
-  `numero` varchar(255) NOT NULL,
-  `complemento` varchar(255) DEFAULT NULL,
-  `bairro` varchar(255) NOT NULL,
-  `cidade` varchar(255) NOT NULL,
-  `estado` varchar(255) NOT NULL,
-  `pais` varchar(255) NOT NULL,
-  `cep` int NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+CREATE TABLE `classroom` (
+  `building` varchar(15) NOT NULL,
+  `room_number` varchar(7) NOT NULL,
+  `capacity` decimal(4,0) DEFAULT NULL,
+  PRIMARY KEY (`building`,`room_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `fotos`
+-- Table structure for table `course`
 --
 
-DROP TABLE IF EXISTS `fotos`;
+DROP TABLE IF EXISTS `course`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `fotos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_produto` int NOT NULL,
-  `foto` blob NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+CREATE TABLE `course` (
+  `course_id` varchar(8) NOT NULL,
+  `title` varchar(50) DEFAULT NULL,
+  `dept_name` varchar(20) DEFAULT NULL,
+  `credits` decimal(2,0) DEFAULT NULL,
+  PRIMARY KEY (`course_id`),
+  KEY `dept_name` (`dept_name`),
+  CONSTRAINT `course_ibfk_1` FOREIGN KEY (`dept_name`) REFERENCES `department` (`dept_name`) ON DELETE SET NULL,
+  CONSTRAINT `course_chk_1` CHECK ((`credits` > 0))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `links_externos`
+-- Table structure for table `department`
 --
 
-DROP TABLE IF EXISTS `links_externos`;
+DROP TABLE IF EXISTS `department`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `links_externos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_produto` int NOT NULL,
-  `link_externo` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+CREATE TABLE `department` (
+  `dept_name` varchar(20) NOT NULL,
+  `building` varchar(15) DEFAULT NULL,
+  `budget` decimal(12,2) DEFAULT NULL,
+  PRIMARY KEY (`dept_name`),
+  CONSTRAINT `department_chk_1` CHECK ((`budget` > 0))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `manuais`
+-- Table structure for table `instructor`
 --
 
-DROP TABLE IF EXISTS `manuais`;
+DROP TABLE IF EXISTS `instructor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `manuais` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_produto` int NOT NULL,
-  `manual` blob NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+CREATE TABLE `instructor` (
+  `ID` varchar(5) NOT NULL,
+  `name` varchar(20) NOT NULL,
+  `dept_name` varchar(20) DEFAULT NULL,
+  `salary` decimal(8,2) DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `dept_name` (`dept_name`),
+  CONSTRAINT `instructor_ibfk_1` FOREIGN KEY (`dept_name`) REFERENCES `department` (`dept_name`) ON DELETE SET NULL,
+  CONSTRAINT `instructor_chk_1` CHECK ((`salary` > 29000))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `pedidos`
+-- Table structure for table `prereq`
 --
 
-DROP TABLE IF EXISTS `pedidos`;
+DROP TABLE IF EXISTS `prereq`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `pedidos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_venda` int NOT NULL,
-  `id_produto` int NOT NULL,
-  `quantidade` int NOT NULL,
-  `desconto` double DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`),
-  KEY `id_venda` (`id_venda`),
-  KEY `id_produto` (`id_produto`),
-  CONSTRAINT `pedidos_ibfk_1` FOREIGN KEY (`id_venda`) REFERENCES `vendas` (`id`),
-  CONSTRAINT `pedidos_ibfk_2` FOREIGN KEY (`id_produto`) REFERENCES `produtos` (`id`)
+CREATE TABLE `prereq` (
+  `course_id` varchar(8) NOT NULL,
+  `prereq_id` varchar(8) NOT NULL,
+  PRIMARY KEY (`course_id`,`prereq_id`),
+  KEY `prereq_id` (`prereq_id`),
+  CONSTRAINT `prereq_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE CASCADE,
+  CONSTRAINT `prereq_ibfk_2` FOREIGN KEY (`prereq_id`) REFERENCES `course` (`course_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `precos`
+-- Table structure for table `section`
 --
 
-DROP TABLE IF EXISTS `precos`;
+DROP TABLE IF EXISTS `section`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `precos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_produto` int NOT NULL,
-  `preco` double NOT NULL,
-  `data_hora_de_inicio` datetime NOT NULL,
-  `data_hora_de_termino` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+CREATE TABLE `section` (
+  `course_id` varchar(8) NOT NULL,
+  `sec_id` varchar(8) NOT NULL,
+  `semester` varchar(6) NOT NULL,
+  `year` decimal(4,0) NOT NULL,
+  `building` varchar(15) DEFAULT NULL,
+  `room_number` varchar(7) DEFAULT NULL,
+  `time_slot_id` varchar(4) DEFAULT NULL,
+  PRIMARY KEY (`course_id`,`sec_id`,`semester`,`year`),
+  KEY `building` (`building`,`room_number`),
+  CONSTRAINT `section_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE CASCADE,
+  CONSTRAINT `section_ibfk_2` FOREIGN KEY (`building`, `room_number`) REFERENCES `classroom` (`building`, `room_number`) ON DELETE SET NULL,
+  CONSTRAINT `section_chk_1` CHECK ((`semester` in (_utf8mb4'Fall',_utf8mb4'Winter',_utf8mb4'Spring',_utf8mb4'Summer'))),
+  CONSTRAINT `section_chk_2` CHECK (((`year` > 1701) and (`year` < 2100)))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `produtos`
+-- Table structure for table `student`
 --
 
-DROP TABLE IF EXISTS `produtos`;
+DROP TABLE IF EXISTS `student`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `produtos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_subtipo` int NOT NULL,
-  `estoque` int NOT NULL,
-  `peso` double NOT NULL,
-  `tamanho_da_caixa_x` double NOT NULL,
-  `tamanho_da_caixa_y` double NOT NULL,
-  `tamanho_da_caixa_z` double NOT NULL,
-  `maximo_de_caixas_empilhadas` int NOT NULL,
-  `fragil` tinyint(1) NOT NULL,
-  `perigoso` tinyint(1) NOT NULL,
-  `validade` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+CREATE TABLE `student` (
+  `ID` varchar(5) NOT NULL,
+  `name` varchar(20) NOT NULL,
+  `dept_name` varchar(20) DEFAULT NULL,
+  `tot_cred` decimal(3,0) DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `dept_name` (`dept_name`),
+  CONSTRAINT `student_ibfk_1` FOREIGN KEY (`dept_name`) REFERENCES `department` (`dept_name`) ON DELETE SET NULL,
+  CONSTRAINT `student_chk_1` CHECK ((`tot_cred` >= 0))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `subtipos`
+-- Table structure for table `takes`
 --
 
-DROP TABLE IF EXISTS `subtipos`;
+DROP TABLE IF EXISTS `takes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `subtipos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_tipo` int NOT NULL,
-  `subtipo` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+CREATE TABLE `takes` (
+  `ID` varchar(5) NOT NULL,
+  `course_id` varchar(8) NOT NULL,
+  `sec_id` varchar(8) NOT NULL,
+  `semester` varchar(6) NOT NULL,
+  `year` decimal(4,0) NOT NULL,
+  `grade` varchar(2) DEFAULT NULL,
+  PRIMARY KEY (`ID`,`course_id`,`sec_id`,`semester`,`year`),
+  KEY `course_id` (`course_id`,`sec_id`,`semester`,`year`),
+  CONSTRAINT `takes_ibfk_1` FOREIGN KEY (`course_id`, `sec_id`, `semester`, `year`) REFERENCES `section` (`course_id`, `sec_id`, `semester`, `year`) ON DELETE CASCADE,
+  CONSTRAINT `takes_ibfk_2` FOREIGN KEY (`ID`) REFERENCES `student` (`ID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `tipos`
+-- Table structure for table `teaches`
 --
 
-DROP TABLE IF EXISTS `tipos`;
+DROP TABLE IF EXISTS `teaches`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tipos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `tipo` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+CREATE TABLE `teaches` (
+  `ID` varchar(5) NOT NULL,
+  `course_id` varchar(8) NOT NULL,
+  `sec_id` varchar(8) NOT NULL,
+  `semester` varchar(6) NOT NULL,
+  `year` decimal(4,0) NOT NULL,
+  PRIMARY KEY (`ID`,`course_id`,`sec_id`,`semester`,`year`),
+  KEY `course_id` (`course_id`,`sec_id`,`semester`,`year`),
+  CONSTRAINT `teaches_ibfk_1` FOREIGN KEY (`course_id`, `sec_id`, `semester`, `year`) REFERENCES `section` (`course_id`, `sec_id`, `semester`, `year`) ON DELETE CASCADE,
+  CONSTRAINT `teaches_ibfk_2` FOREIGN KEY (`ID`) REFERENCES `instructor` (`ID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `vendas`
+-- Table structure for table `time_slot`
 --
 
-DROP TABLE IF EXISTS `vendas`;
+DROP TABLE IF EXISTS `time_slot`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `vendas` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_cliente` int NOT NULL,
-  `id_endereco` int NOT NULL,
-  `modo_de_pagamento` enum('boleto','pix','transferencia','cartao_de_credito','cartao_de_debito') DEFAULT NULL,
-  `quantidade_de_parcelas` int NOT NULL,
-  `juros` double DEFAULT NULL,
-  `dia_de_vencimento` int DEFAULT NULL,
-  `data_do_primeiro_vencimento` date NOT NULL,
-  `data_hora_da_venda` datetime NOT NULL,
-  `data_hora_de_entrega` datetime NOT NULL,
-  `condicoes` text,
-  `nota_fiscal` blob NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`),
-  KEY `id_cliente` (`id_cliente`),
-  KEY `id_endereco` (`id_endereco`),
-  CONSTRAINT `vendas_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id`),
-  CONSTRAINT `vendas_ibfk_2` FOREIGN KEY (`id_endereco`) REFERENCES `enderecos` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `videos`
---
-
-DROP TABLE IF EXISTS `videos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `videos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_produto` int NOT NULL,
-  `video` blob NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `volume_vendas_diario`
---
-
-DROP TABLE IF EXISTS `volume_vendas_diario`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `volume_vendas_diario` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `quantidade` int NOT NULL,
-  `dia` date DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `volume_vendas_diario_estadual`
---
-
-DROP TABLE IF EXISTS `volume_vendas_diario_estadual`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `volume_vendas_diario_estadual` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `quantidade` int NOT NULL,
-  `dia` date DEFAULT NULL,
-  `estado` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `volume_vendas_diario_municipal`
---
-
-DROP TABLE IF EXISTS `volume_vendas_diario_municipal`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `volume_vendas_diario_municipal` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `quantidade` int NOT NULL,
-  `dia` date DEFAULT NULL,
-  `municipio` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `volume_vendas_mensal`
---
-
-DROP TABLE IF EXISTS `volume_vendas_mensal`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `volume_vendas_mensal` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `quantidade` int NOT NULL,
-  `mes` int DEFAULT NULL,
-  `ano` int DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `volume_vendas_mensal_estadual`
---
-
-DROP TABLE IF EXISTS `volume_vendas_mensal_estadual`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `volume_vendas_mensal_estadual` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `quantidade` int NOT NULL,
-  `mes` int DEFAULT NULL,
-  `ano` int DEFAULT NULL,
-  `estado` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `volume_vendas_mensal_municipal`
---
-
-DROP TABLE IF EXISTS `volume_vendas_mensal_municipal`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `volume_vendas_mensal_municipal` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `quantidade` int NOT NULL,
-  `mes` int DEFAULT NULL,
-  `ano` int DEFAULT NULL,
-  `municipio` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `volume_vendas_semanal`
---
-
-DROP TABLE IF EXISTS `volume_vendas_semanal`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `volume_vendas_semanal` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `quantidade` int NOT NULL,
-  `semana` int DEFAULT NULL,
-  `ano` int DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `volume_vendas_semanal_estadual`
---
-
-DROP TABLE IF EXISTS `volume_vendas_semanal_estadual`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `volume_vendas_semanal_estadual` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `quantidade` int NOT NULL,
-  `semana` int DEFAULT NULL,
-  `ano` int DEFAULT NULL,
-  `estado` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `volume_vendas_semanal_municipal`
---
-
-DROP TABLE IF EXISTS `volume_vendas_semanal_municipal`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `volume_vendas_semanal_municipal` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `quantidade` int NOT NULL,
-  `semana` int DEFAULT NULL,
-  `ano` int DEFAULT NULL,
-  `municipio` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+CREATE TABLE `time_slot` (
+  `time_slot_id` varchar(4) NOT NULL,
+  `day` varchar(1) NOT NULL,
+  `start_hr` decimal(2,0) NOT NULL,
+  `start_min` decimal(2,0) NOT NULL,
+  `end_hr` decimal(2,0) DEFAULT NULL,
+  `end_min` decimal(2,0) DEFAULT NULL,
+  PRIMARY KEY (`time_slot_id`,`day`,`start_hr`,`start_min`),
+  CONSTRAINT `time_slot_chk_1` CHECK (((`start_hr` >= 0) and (`start_hr` < 24))),
+  CONSTRAINT `time_slot_chk_2` CHECK (((`start_min` >= 0) and (`start_min` < 60))),
+  CONSTRAINT `time_slot_chk_3` CHECK (((`end_hr` >= 0) and (`end_hr` < 24))),
+  CONSTRAINT `time_slot_chk_4` CHECK (((`end_min` >= 0) and (`end_min` < 60)))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -429,4 +233,4 @@ CREATE TABLE `volume_vendas_semanal_municipal` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-17  3:35:23
+-- Dump completed on 2024-06-17  3:55:16

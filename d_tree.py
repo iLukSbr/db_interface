@@ -50,13 +50,21 @@ def draw_tree_view(page, con, usr_credentials):
         db_selector = gen_db_list(db_name)
 
         erd_generator(usr_credentials, db_name, page)
+        img = ft.Image(
+            src=f"schema.svg",
+            width=1000,
+            height=1000,
+            fit=ft.ImageFit.CONTAIN
+        )
+        vertical = ft.Column([img],scroll=True)
+        horizontal = ft.Row([vertical], scroll=ft.ScrollMode.ALWAYS, expand=1,vertical_alignment=ft.CrossAxisAlignment.START)
 
         if db_name:
             tree_view = ft.View(
                 "/tree",[
                     menubar,
                     db_selector,
-                    # erd
+                    horizontal
                 ]
             )
             page.views.pop()

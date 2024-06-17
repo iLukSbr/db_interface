@@ -1,298 +1,148 @@
-Enum "clientes_raca_enum" {
-  "branca"
-  "preta"
-  "parda"
-  "indígena"
-  "amarela"
-}
-
-Enum "vendas_modo_de_pagamento_enum" {
-  "boleto"
-  "pix"
-  "transferencia"
-  "cartao_de_credito"
-  "cartao_de_debito"
-}
-
-Table "clientes" {
-  "id" int [pk, not null, increment]
-  "id_endereco_primario" int [not null]
-  "id_endereco_secundario" int [default: null]
-  "foto" blob
-  "nome" varchar(255) [not null]
-  "sobrenome" varchar(255) [not null]
-  "nome_social" varchar(255) [default: null]
-  "genero" varchar(255) [default: null]
-  "estado_civil" varchar(255) [default: null]
-  "profissao" varchar(255) [default: null]
-  "razao_social_empresa" varchar(255) [default: null]
-  "cnpj" int [default: null]
-  "data_de_nascimento" date [not null]
-  "nacionalidade" varchar(255) [default: null]
-  "raca" clientes_raca_enum [default: null]
-  "cpf" int [not null]
-  "data_de_emissao" date [not null]
-  "orgao_expedidor" varchar(255) [not null]
-  "numero_do_cartao_bancario" int [default: null]
-  "validade_do_cartao_bancario" date [default: null]
-  "cvv" int [default: null]
-  "credito" tinyint(1) [default: null]
-  "telefone_primario" int [not null]
-  "telefone_secundario" int [default: null]
-  "e_mail" varchar(255) [default: null]
+Table "advisor" {
+  "s_ID" varchar(5) [pk, not null]
+  "i_ID" varchar(5) [default: null]
 
   Indexes {
-    id [unique, name: "id"]
+    i_ID [name: "i_ID"]
   }
 }
 
-Table "enderecos" {
-  "id" int [pk, not null, increment]
-  "id_cliente" int [not null]
-  "rua" varchar(255) [not null]
-  "numero" varchar(255) [not null]
-  "complemento" varchar(255) [default: null]
-  "bairro" varchar(255) [not null]
-  "cidade" varchar(255) [not null]
-  "estado" varchar(255) [not null]
-  "pais" varchar(255) [not null]
-  "cep" int [not null]
+Table "classroom" {
+  "building" varchar(15) [not null]
+  "room_number" varchar(7) [not null]
+  "capacity" decimal(4,0) [default: null]
 
   Indexes {
-    id [unique, name: "id"]
+    (building, room_number) [pk]
   }
 }
 
-Table "fotos" {
-  "id" int [pk, not null, increment]
-  "id_produto" int [not null]
-  "foto" blob [not null]
+Table "course" {
+  "course_id" varchar(8) [pk, not null]
+  "title" varchar(50) [default: null]
+  "dept_name" varchar(20) [default: null]
+  "credits" decimal(2,0) [default: null]
 
   Indexes {
-    id [unique, name: "id"]
+    dept_name [name: "dept_name"]
   }
 }
 
-Table "links_externos" {
-  "id" int [pk, not null, increment]
-  "id_produto" int [not null]
-  "link_externo" varchar(255) [not null]
+Table "department" {
+  "dept_name" varchar(20) [pk, not null]
+  "building" varchar(15) [default: null]
+  "budget" decimal(12,2) [default: null]
+}
+
+Table "instructor" {
+  "ID" varchar(5) [pk, not null]
+  "name" varchar(20) [not null]
+  "dept_name" varchar(20) [default: null]
+  "salary" decimal(8,2) [default: null]
 
   Indexes {
-    id [unique, name: "id"]
+    dept_name [name: "dept_name"]
   }
 }
 
-Table "manuais" {
-  "id" int [pk, not null, increment]
-  "id_produto" int [not null]
-  "manual" blob [not null]
+Table "prereq" {
+  "course_id" varchar(8) [not null]
+  "prereq_id" varchar(8) [not null]
 
   Indexes {
-    id [unique, name: "id"]
+    (course_id, prereq_id) [pk]
+    prereq_id [name: "prereq_id"]
   }
 }
 
-Table "pedidos" {
-  "id" int [pk, not null, increment]
-  "id_venda" int [not null]
-  "id_produto" int [not null]
-  "quantidade" int [not null]
-  "desconto" double [default: null]
+Table "section" {
+  "course_id" varchar(8) [not null]
+  "sec_id" varchar(8) [not null]
+  "semester" varchar(6) [not null]
+  "year" decimal(4,0) [not null]
+  "building" varchar(15) [default: null]
+  "room_number" varchar(7) [default: null]
+  "time_slot_id" varchar(4) [default: null]
 
   Indexes {
-    id [unique, name: "id"]
-    id_venda [name: "id_venda"]
-    id_produto [name: "id_produto"]
+    (course_id, sec_id, semester, year) [pk]
+    (building, room_number) [name: "building"]
   }
 }
 
-Table "precos" {
-  "id" int [pk, not null, increment]
-  "id_produto" int [not null]
-  "preco" double [not null]
-  "data_hora_de_inicio" datetime [not null]
-  "data_hora_de_termino" datetime [default: null]
+Table "student" {
+  "ID" varchar(5) [pk, not null]
+  "name" varchar(20) [not null]
+  "dept_name" varchar(20) [default: null]
+  "tot_cred" decimal(3,0) [default: null]
 
   Indexes {
-    id [unique, name: "id"]
+    dept_name [name: "dept_name"]
   }
 }
 
-Table "produtos" {
-  "id" int [pk, not null, increment]
-  "id_subtipo" int [not null]
-  "estoque" int [not null]
-  "peso" double [not null]
-  "tamanho_da_caixa_x" double [not null]
-  "tamanho_da_caixa_y" double [not null]
-  "tamanho_da_caixa_z" double [not null]
-  "maximo_de_caixas_empilhadas" int [not null]
-  "fragil" tinyint(1) [not null]
-  "perigoso" tinyint(1) [not null]
-  "validade" datetime [not null]
+Table "takes" {
+  "ID" varchar(5) [not null]
+  "course_id" varchar(8) [not null]
+  "sec_id" varchar(8) [not null]
+  "semester" varchar(6) [not null]
+  "year" decimal(4,0) [not null]
+  "grade" varchar(2) [default: null]
 
   Indexes {
-    id [unique, name: "id"]
+    (ID, course_id, sec_id, semester, year) [pk]
+    (course_id, sec_id, semester, year) [name: "course_id"]
   }
 }
 
-Table "subtipos" {
-  "id" int [pk, not null, increment]
-  "id_tipo" int [not null]
-  "subtipo" varchar(255) [not null]
+Table "teaches" {
+  "ID" varchar(5) [not null]
+  "course_id" varchar(8) [not null]
+  "sec_id" varchar(8) [not null]
+  "semester" varchar(6) [not null]
+  "year" decimal(4,0) [not null]
 
   Indexes {
-    id [unique, name: "id"]
+    (ID, course_id, sec_id, semester, year) [pk]
+    (course_id, sec_id, semester, year) [name: "course_id"]
   }
 }
 
-Table "tipos" {
-  "id" int [pk, not null, increment]
-  "tipo" varchar(255) [not null]
+Table "time_slot" {
+  "time_slot_id" varchar(4) [not null]
+  "day" varchar(1) [not null]
+  "start_hr" decimal(2,0) [not null]
+  "start_min" decimal(2,0) [not null]
+  "end_hr" decimal(2,0) [default: null]
+  "end_min" decimal(2,0) [default: null]
 
   Indexes {
-    id [unique, name: "id"]
+    (time_slot_id, day, start_hr, start_min) [pk]
   }
 }
 
-Table "vendas" {
-  "id" int [pk, not null, increment]
-  "id_cliente" int [not null]
-  "id_endereco" int [not null]
-  "modo_de_pagamento" vendas_modo_de_pagamento_enum [default: null]
-  "quantidade_de_parcelas" int [not null]
-  "juros" double [default: null]
-  "dia_de_vencimento" int [default: null]
-  "data_do_primeiro_vencimento" date [not null]
-  "data_hora_da_venda" datetime [not null]
-  "data_hora_de_entrega" datetime [not null]
-  "condicoes" text
-  "nota_fiscal" blob [not null]
+Ref "advisor_ibfk_1":"instructor"."ID" < "advisor"."i_ID" [delete: set null]
 
-  Indexes {
-    id [unique, name: "id"]
-    id_cliente [name: "id_cliente"]
-    id_endereco [name: "id_endereco"]
-  }
-}
+Ref "advisor_ibfk_2":"student"."ID" < "advisor"."s_ID" [delete: cascade]
 
-Table "videos" {
-  "id" int [pk, not null, increment]
-  "id_produto" int [not null]
-  "video" blob [not null]
+Ref "course_ibfk_1":"department"."dept_name" < "course"."dept_name" [delete: set null]
 
-  Indexes {
-    id [unique, name: "id"]
-  }
-}
+Ref "instructor_ibfk_1":"department"."dept_name" < "instructor"."dept_name" [delete: set null]
 
-Table "volume_vendas_diario" {
-  "id" int [pk, not null, increment]
-  "quantidade" int [not null]
-  "dia" date [default: null]
+Ref "prereq_ibfk_1":"course"."course_id" < "prereq"."course_id" [delete: cascade]
 
-  Indexes {
-    id [unique, name: "id"]
-  }
-}
+Ref "prereq_ibfk_2":"course"."course_id" < "prereq"."prereq_id"
 
-Table "volume_vendas_diario_estadual" {
-  "id" int [pk, not null, increment]
-  "quantidade" int [not null]
-  "dia" date [default: null]
-  "estado" varchar(255) [default: null]
+Ref "section_ibfk_1":"course"."course_id" < "section"."course_id" [delete: cascade]
 
-  Indexes {
-    id [unique, name: "id"]
-  }
-}
+Ref "section_ibfk_2":"classroom".("building", "room_number") < "section".("building", "room_number") [delete: set null]
 
-Table "volume_vendas_diario_municipal" {
-  "id" int [pk, not null, increment]
-  "quantidade" int [not null]
-  "dia" date [default: null]
-  "municipio" varchar(255) [default: null]
+Ref "student_ibfk_1":"department"."dept_name" < "student"."dept_name" [delete: set null]
 
-  Indexes {
-    id [unique, name: "id"]
-  }
-}
+Ref "takes_ibfk_1":"section".("course_id", "sec_id", "semester", "year") < "takes".("course_id", "sec_id", "semester", "year") [delete: cascade]
 
-Table "volume_vendas_mensal" {
-  "id" int [pk, not null, increment]
-  "quantidade" int [not null]
-  "mes" int [default: null]
-  "ano" int [default: null]
+Ref "takes_ibfk_2":"student"."ID" < "takes"."ID" [delete: cascade]
 
-  Indexes {
-    id [unique, name: "id"]
-  }
-}
+Ref "teaches_ibfk_1":"section".("course_id", "sec_id", "semester", "year") < "teaches".("course_id", "sec_id", "semester", "year") [delete: cascade]
 
-Table "volume_vendas_mensal_estadual" {
-  "id" int [pk, not null, increment]
-  "quantidade" int [not null]
-  "mes" int [default: null]
-  "ano" int [default: null]
-  "estado" varchar(255) [default: null]
-
-  Indexes {
-    id [unique, name: "id"]
-  }
-}
-
-Table "volume_vendas_mensal_municipal" {
-  "id" int [pk, not null, increment]
-  "quantidade" int [not null]
-  "mes" int [default: null]
-  "ano" int [default: null]
-  "municipio" varchar(255) [default: null]
-
-  Indexes {
-    id [unique, name: "id"]
-  }
-}
-
-Table "volume_vendas_semanal" {
-  "id" int [pk, not null, increment]
-  "quantidade" int [not null]
-  "semana" int [default: null]
-  "ano" int [default: null]
-
-  Indexes {
-    id [unique, name: "id"]
-  }
-}
-
-Table "volume_vendas_semanal_estadual" {
-  "id" int [pk, not null, increment]
-  "quantidade" int [not null]
-  "semana" int [default: null]
-  "ano" int [default: null]
-  "estado" varchar(255) [default: null]
-
-  Indexes {
-    id [unique, name: "id"]
-  }
-}
-
-Table "volume_vendas_semanal_municipal" {
-  "id" int [pk, not null, increment]
-  "quantidade" int [not null]
-  "semana" int [default: null]
-  "ano" int [default: null]
-  "municipio" varchar(255) [default: null]
-
-  Indexes {
-    id [unique, name: "id"]
-  }
-}
-
-Ref "pedidos_ibfk_1":"vendas"."id" < "pedidos"."id_venda"
-
-Ref "pedidos_ibfk_2":"produtos"."id" < "pedidos"."id_produto"
-
-Ref "vendas_ibfk_1":"clientes"."id" < "vendas"."id_cliente"
-
-Ref "vendas_ibfk_2":"enderecos"."id" < "vendas"."id_endereco"
+Ref "teaches_ibfk_2":"instructor"."ID" < "teaches"."ID" [delete: cascade]
