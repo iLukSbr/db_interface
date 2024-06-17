@@ -2,6 +2,7 @@ import flet as ft
 import subprocess as sp
 import os
 import re
+import sys
 
 from d_messages import display_action
 
