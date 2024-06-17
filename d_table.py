@@ -2,6 +2,8 @@ import flet as ft
 import pymysql as my
 import psycopg2 as pg
 
+global table, column_names
+
 def create_table_display(table, column_names):
     table_display = ft.DataTable(
         columns=[ft.DataColumn(ft.Text(name)) for name in column_names],
@@ -89,6 +91,7 @@ def draw_table_view(page, con, usr_credentials):
    
     # Carregar tabela escolhida
     def load_table(table_selection_evt, db_name, limit_field):
+        global table, column_names
         def on_limit_button_click(e, table_selection_evt, db_name, limit_field):
             load_table(table_selection_evt, db_name, limit_field)
 
@@ -97,35 +100,36 @@ def draw_table_view(page, con, usr_credentials):
             cursor = con.cursor()
             cursor.execute(f"SELECT * FROM {table_selection_evt.control.value} LIMIT {limit_field.value};")
             table = cursor.fetchall()
-            column_names = [desc[0] for desc in cursor.description]
+            if not table or len(table) == 0:
+                display_action("Nenhum resultado recebido.", page)
+            else:
+                column_names = [desc[0] for desc in cursor.description]
+                scroll_tab = create_table_display(table, column_names)
+                table_selector = gen_tables_list(db_name, table_selection_evt.control.value)
+                db_selector = gen_db_list(db_name)
+                
+                limit_button = ft.ElevatedButton(
+                    text="Limitar",
+                    on_click=lambda button_evt: on_limit_button_click(button_evt, table_selection_evt, db_name, limit_field)
+                )
+
+                if db_name:
+                    table_view = ft.View(
+                        "/table",[
+                            menubar,
+                            db_selector,
+                            table_selector,
+                            limit_field,
+                            limit_button,
+                            scroll_tab
+                        ]
+                    )
+                    page.views.pop()
+                    page.views.append(table_view)
+                    page.update()
+                    page.go(table_view.route)
         except Exception as e:
             display_action(e, page)
-
-        scroll_tab = create_table_display(table, column_names)
-        
-        table_selector = gen_tables_list(db_name, table_selection_evt.control.value)
-        db_selector = gen_db_list(db_name)
-        
-        limit_button = ft.ElevatedButton(
-            text="Limitar",
-            on_click=lambda button_evt: on_limit_button_click(button_evt, table_selection_evt, db_name, limit_field)
-        )
-
-        if db_name:
-            table_view = ft.View(
-                "/table",[
-                    menubar,
-                    db_selector,
-                    table_selector,
-                    limit_field,
-                    limit_button,
-                    scroll_tab
-                ]
-            )
-            page.views.pop()
-            page.views.append(table_view)
-            page.update()
-            page.go(table_view.route)
 
     db_selector = gen_db_list(None)
     db_view = ft.View(
@@ -137,3 +141,10 @@ def draw_table_view(page, con, usr_credentials):
     page.views.append(db_view)
     page.update()
     page.go(db_view.route)
+
+def get_table():
+    global table, column_names
+    if 'table' in globals():
+        return table, column_names
+    else:
+        return None, None

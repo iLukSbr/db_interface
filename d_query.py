@@ -1,5 +1,7 @@
 import flet as ft
 
+global table, column_names
+
 def queries(page, con, usr_credentials):
     from d_table import create_table_display
     from d_menu import menu_bar
@@ -12,6 +14,7 @@ def queries(page, con, usr_credentials):
     )
 
     def handle_query_click(e):
+        global table, column_names
         query_text = query_field.value
 
         query_button = ft.ElevatedButton(
@@ -67,3 +70,10 @@ def queries(page, con, usr_credentials):
     page.views.append(query_view)
     page.update()
     page.go(query_view.route)
+
+def get_table_query():
+    global table, column_names
+    if 'table' in globals():
+        return table, column_names
+    else:
+        return None, None

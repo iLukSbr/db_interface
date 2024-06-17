@@ -1,6 +1,8 @@
 import flet as ft
 import pymysql as my
 import psycopg2 as pg
+import os
+import pandas as pd
 
 from d_messages import display_action
 
@@ -26,22 +28,10 @@ def menu_bar(p, c, u):
                 content=ft.Text("Arquivo"),
                 controls=[
                     ft.MenuItemButton(
-                        content=ft.Text("Exportar como .csv"),
+                        content=ft.Text("Exportar como..."),
                         leading=ft.Icon(ft.icons.SAVE_AS_OUTLINED),
                         style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
-                        on_click=handle_save_csv_click
-                    ),
-                    ft.MenuItemButton(
-                        content=ft.Text("Exportar como .json"),
-                        leading=ft.Icon(ft.icons.SAVE_AS_SHARP),
-                        style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
-                        on_click=handle_save_json_click
-                    ),
-                    ft.MenuItemButton(
-                        content=ft.Text("Exportar como .svg"),
-                        leading=ft.Icon(ft.icons.SAVE),
-                        style=ft.ButtonStyle(bgcolor={ft.MaterialState.HOVERED: ft.colors.GREEN_100}),
-                        on_click=handle_save_json_click
+                        on_click=handle_save_click
                     ),
                     ft.MenuItemButton(
                         content=ft.Text("Desconectar"),
@@ -89,17 +79,64 @@ def handle_disconnect_click(e, con):
     except Exception as e:
         display_action(e, page)
 
-def handle_save_csv_click(e):
+def handle_save_click(e):
+    from d_table import get_table
+    from d_query import get_table_query
     global page
-    display_action(e.control.content.value, page)
-    page.views.pop()
-    pass
 
-def handle_save_json_click(e):
-    global page
     display_action(e.control.content.value, page)
-    page.views.pop()
-    pass
+    current_view = page.views[-1]
+    if current_view.route == "/table" or current_view.route == "/query":
+        extensions=[
+            ".csv",
+            ".json"
+        ]
+        if current_view.route == "/query":
+            data, column_list = get_table_query()
+        else:
+            data, column_list = get_table()
+        if not data or len(data) == 0:
+            display_action("Nenhum dado para salvar.", page)
+            return
+        df = pd.DataFrame(data, columns=column_list)
+    elif current_view.route == "/tree":
+        extensions=[
+            ".svg"
+        ]
+    if current_view.route == "/table" and len(page.views[-1].controls) == 6:
+        filename = page.views[-1].controls[2].value + ".csv"
+    elif current_view.route == "/table" or current_view.route == "/query":
+        filename = "table_export.csv"
+    elif current_view.route == "/tree":
+        filename = "tree_export.svg"
+
+    def save_file(e):
+        filepath = e.path
+        if filepath:
+            extension = os.path.splitext(filepath)[1]
+            if extension in extensions:
+                if extension == ".csv":
+                    df.to_csv(filepath,
+                        header=True,
+                        index=False
+                    )
+                elif extension == ".json":
+                    df.to_json(
+                        filepath,
+                        orient='records',
+                        lines=True
+                    )
+
+    save_file_dialog = ft.FilePicker(on_result = save_file)
+    page.overlay.append(save_file_dialog)
+    page.update()
+    save_file_dialog.save_file(
+        dialog_title="Exportar como...",
+        file_name=filename,
+        initial_directory=".",
+        allowed_extensions=extensions
+    )
+
 def handle_tree_click(e):
     global page
     display_action(e.control.content.value, page)
