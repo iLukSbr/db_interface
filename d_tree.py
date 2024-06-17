@@ -5,7 +5,7 @@ import re
 
 from d_messages import display_action
 
-def dbml_generator(usr_credentials, db_name, page):
+def erd_generator(usr_credentials, db_name, page):
     try:
         output_file = os.path.join(os.getcwd(), 'schema.sql')
 
@@ -18,7 +18,7 @@ def dbml_generator(usr_credentials, db_name, page):
             js_file = os.path.join(os.getcwd(), 'postgres2dbml.js')
 
         try:
-            result = sp.run(command, shell=True, check=True, capture_output=True, text=True)
+            sp.run(command, shell=True, check=True, capture_output=True, text=True)
         except sp.CalledProcessError as e:
             display_action(e.stderr, page)
 
@@ -30,8 +30,11 @@ def dbml_generator(usr_credentials, db_name, page):
             with open(output_file, 'w') as file:
                 file.write(sql_without_functions)
 
-        dbml = sp.run(['node', js_file], capture_output=True, text=True).stdout
-        print(dbml)
+        sp.run(['node', js_file], check=True, capture_output=True, text=True)
+
+        command = 'npx dbml-renderer -i schema.dbml -o schema.svg'
+        sp.run(command, shell=True, check=True, capture_output=True, text=True)
+        
     except Exception as e:
         display_action(e, page)
 
@@ -46,7 +49,7 @@ def draw_tree_view(page, con, usr_credentials):
         db_name = e.control.value
         db_selector = gen_db_list(db_name)
 
-        dbml_generator(usr_credentials, db_name, page)
+        erd_generator(usr_credentials, db_name, page)
 
         if db_name:
             tree_view = ft.View(

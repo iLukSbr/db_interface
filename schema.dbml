@@ -1,54 +1,128 @@
-Table "livros_db"."generos" {
-  "genero_id" smallint [pk, not null]
-  "descricao" "character varying(30)" [not null]
+Table "university"."advisor" {
+  "s_id" "character varying(5)" [pk, not null]
+  "i_id" "character varying(5)"
 }
 
-Table "livros_db"."livros" {
-  "livro_id" smallint [pk, not null]
-  "titulo" "character varying(150)" [not null]
-  "autor" "character varying(150)" [not null]
-  "edicao" smallint [not null]
-  "ano" smallint [not null]
-  "editora" "character varying(50)" [not null]
-  "genero_id" smallint [not null]
-  "descricao" "character varying(450)" [not null]
-  "preco" numeric(15,2) [not null]
-  "estoque" smallint [not null]
-  "reserva" smallint [not null]
-  "capa" bytea
+Table "university"."classroom" {
+  "building" "character varying(15)" [not null]
+  "room_number" "character varying(7)" [not null]
+  "capacity" numeric(4,0)
+
+  Indexes {
+    (building, room_number) [pk, name: "classroom_pkey"]
+  }
 }
 
-Table "livros_db"."pedidos" {
-  "pedido_id" integer [pk, not null]
-  "usuario_id" smallint [not null]
-  "data_pedido" date [not null]
-  "tipo_pag" smallint [not null]
+Table "university"."course" {
+  "course_id" "character varying(8)" [pk, not null]
+  "title" "character varying(50)"
+  "dept_name" "character varying(20)"
+  "credits" numeric(2,0)
 }
 
-Table "livros_db"."pedidos_detalhe" {
-  "detalhe_id" integer [pk, not null]
-  "pedido_id" bigint [not null]
-  "livro_id" smallint [not null]
-  "qtd" smallint [not null]
+Table "university"."department" {
+  "dept_name" "character varying(20)" [pk, not null]
+  "building" "character varying(15)"
+  "budget" numeric(12,2)
 }
 
-Table "livros_db"."usuarios" {
-  "usuario_id" smallint [pk, not null]
-  "nome" "character varying(40)" [not null]
-  "endereco" "character varying(40)"
-  "bairro" "character varying(30)"
-  "cidade" "character varying(30)" [not null]
-  "uf" "character (2)" [not null]
-  "cep" "character (8)" [not null]
-  "fone" "character varying(20)" [not null]
-  "login" "character varying(20)" [not null]
-  "senha" "character varying(20)" [not null]
+Table "university"."instructor" {
+  "id" "character varying(5)" [pk, not null]
+  "name" "character varying(20)" [not null]
+  "dept_name" "character varying(20)"
+  "salary" numeric(8,2)
 }
 
-Ref "livros_genero_id_fkey":"livros_db"."generos"."genero_id" < "livros_db"."livros"."genero_id"
+Table "university"."prereq" {
+  "course_id" "character varying(8)" [not null]
+  "prereq_id" "character varying(8)" [not null]
 
-Ref "pedidos_detalhe_livro_id_fkey":"livros_db"."livros"."livro_id" < "livros_db"."pedidos_detalhe"."livro_id"
+  Indexes {
+    (course_id, prereq_id) [pk, name: "prereq_pkey"]
+  }
+}
 
-Ref "pedidos_detalhe_pedido_id_fkey":"livros_db"."pedidos"."pedido_id" < "livros_db"."pedidos_detalhe"."pedido_id"
+Table "university"."section" {
+  "course_id" "character varying(8)" [not null]
+  "sec_id" "character varying(8)" [not null]
+  "semester" "character varying(6)" [not null]
+  "year" numeric(4,0) [not null]
+  "building" "character varying(15)"
+  "room_number" "character varying(7)"
+  "time_slot_id" "character varying(4)"
 
-Ref "pedidos_usuario_id_fkey":"livros_db"."usuarios"."usuario_id" < "livros_db"."pedidos"."usuario_id"
+  Indexes {
+    (course_id, sec_id, semester, year) [pk, name: "section_pkey"]
+  }
+}
+
+Table "university"."student" {
+  "id" "character varying(5)" [pk, not null]
+  "name" "character varying(20)" [not null]
+  "dept_name" "character varying(20)"
+  "tot_cred" numeric(3,0)
+}
+
+Table "university"."takes" {
+  "id" "character varying(5)" [not null]
+  "course_id" "character varying(8)" [not null]
+  "sec_id" "character varying(8)" [not null]
+  "semester" "character varying(6)" [not null]
+  "year" numeric(4,0) [not null]
+  "grade" "character varying(2)"
+
+  Indexes {
+    (id, course_id, sec_id, semester, year) [pk, name: "takes_pkey"]
+  }
+}
+
+Table "university"."teaches" {
+  "id" "character varying(5)" [not null]
+  "course_id" "character varying(8)" [not null]
+  "sec_id" "character varying(8)" [not null]
+  "semester" "character varying(6)" [not null]
+  "year" numeric(4,0) [not null]
+
+  Indexes {
+    (id, course_id, sec_id, semester, year) [pk, name: "teaches_pkey"]
+  }
+}
+
+Table "university"."time_slot" {
+  "time_slot_id" "character varying(4)" [not null]
+  "day" "character varying(1)" [not null]
+  "start_hr" numeric(2,0) [not null]
+  "start_min" numeric(2,0) [not null]
+  "end_hr" numeric(2,0)
+  "end_min" numeric(2,0)
+
+  Indexes {
+    (time_slot_id, day, start_hr, start_min) [pk, name: "time_slot_pkey"]
+  }
+}
+
+Ref "advisor_i_id_fkey":"university"."instructor"."id" < "university"."advisor"."i_id" [delete: set null]
+
+Ref "advisor_s_id_fkey":"university"."student"."id" < "university"."advisor"."s_id" [delete: cascade]
+
+Ref "course_dept_name_fkey":"university"."department"."dept_name" < "university"."course"."dept_name" [delete: set null]
+
+Ref "instructor_dept_name_fkey":"university"."department"."dept_name" < "university"."instructor"."dept_name" [delete: set null]
+
+Ref "prereq_course_id_fkey":"university"."course"."course_id" < "university"."prereq"."course_id" [delete: cascade]
+
+Ref "prereq_prereq_id_fkey":"university"."course"."course_id" < "university"."prereq"."prereq_id"
+
+Ref "section_building_room_number_fkey":"university"."classroom".("building", "room_number") < "university"."section".("building", "room_number") [delete: set null]
+
+Ref "section_course_id_fkey":"university"."course"."course_id" < "university"."section"."course_id" [delete: cascade]
+
+Ref "student_dept_name_fkey":"university"."department"."dept_name" < "university"."student"."dept_name" [delete: set null]
+
+Ref "takes_course_id_sec_id_semester_year_fkey":"university"."section".("course_id", "sec_id", "semester", "year") < "university"."takes".("course_id", "sec_id", "semester", "year") [delete: cascade]
+
+Ref "takes_id_fkey":"university"."student"."id" < "university"."takes"."id" [delete: cascade]
+
+Ref "teaches_course_id_sec_id_semester_year_fkey":"university"."section".("course_id", "sec_id", "semester", "year") < "university"."teaches".("course_id", "sec_id", "semester", "year") [delete: cascade]
+
+Ref "teaches_id_fkey":"university"."instructor"."id" < "university"."teaches"."id" [delete: cascade]
