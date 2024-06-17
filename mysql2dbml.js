@@ -12,5 +12,3 @@ const { exporter } = require('@dbml/core');
 const str = exporter.export( dbml, 'dbml' );
 
 fs.writeFileSync('./schema.dbml', str);
-
-console.log(str);
