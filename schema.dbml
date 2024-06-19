@@ -1,148 +1,24 @@
-Table "advisor" {
-  "s_ID" varchar(5) [pk, not null]
-  "i_ID" varchar(5) [default: null]
-
-  Indexes {
-    i_ID [name: "i_ID"]
-  }
+Table "test_table" {
+  "id" int [pk, not null, increment]
+  "column1" varchar(255) [default: null]
+  "column2" varchar(255) [default: null]
+  "column3" varchar(255) [default: null]
+  "column4" varchar(255) [default: null]
+  "column5" varchar(255) [default: null]
+  "column6" varchar(255) [default: null]
+  "column7" varchar(255) [default: null]
+  "column8" varchar(255) [default: null]
+  "column9" varchar(255) [default: null]
+  "column10" varchar(255) [default: null]
+  "column11" varchar(255) [default: null]
+  "column12" varchar(255) [default: null]
+  "column13" varchar(255) [default: null]
+  "column14" varchar(255) [default: null]
+  "column15" varchar(255) [default: null]
+  "column16" varchar(255) [default: null]
+  "column17" varchar(255) [default: null]
+  "column18" varchar(255) [default: null]
+  "column19" varchar(255) [default: null]
+  "column20" varchar(255) [default: null]
+  "column100" varchar(255) [default: null]
 }
-
-Table "classroom" {
-  "building" varchar(15) [not null]
-  "room_number" varchar(7) [not null]
-  "capacity" decimal(4,0) [default: null]
-
-  Indexes {
-    (building, room_number) [pk]
-  }
-}
-
-Table "course" {
-  "course_id" varchar(8) [pk, not null]
-  "title" varchar(50) [default: null]
-  "dept_name" varchar(20) [default: null]
-  "credits" decimal(2,0) [default: null]
-
-  Indexes {
-    dept_name [name: "dept_name"]
-  }
-}
-
-Table "department" {
-  "dept_name" varchar(20) [pk, not null]
-  "building" varchar(15) [default: null]
-  "budget" decimal(12,2) [default: null]
-}
-
-Table "instructor" {
-  "ID" varchar(5) [pk, not null]
-  "name" varchar(20) [not null]
-  "dept_name" varchar(20) [default: null]
-  "salary" decimal(8,2) [default: null]
-
-  Indexes {
-    dept_name [name: "dept_name"]
-  }
-}
-
-Table "prereq" {
-  "course_id" varchar(8) [not null]
-  "prereq_id" varchar(8) [not null]
-
-  Indexes {
-    (course_id, prereq_id) [pk]
-    prereq_id [name: "prereq_id"]
-  }
-}
-
-Table "section" {
-  "course_id" varchar(8) [not null]
-  "sec_id" varchar(8) [not null]
-  "semester" varchar(6) [not null]
-  "year" decimal(4,0) [not null]
-  "building" varchar(15) [default: null]
-  "room_number" varchar(7) [default: null]
-  "time_slot_id" varchar(4) [default: null]
-
-  Indexes {
-    (course_id, sec_id, semester, year) [pk]
-    (building, room_number) [name: "building"]
-  }
-}
-
-Table "student" {
-  "ID" varchar(5) [pk, not null]
-  "name" varchar(20) [not null]
-  "dept_name" varchar(20) [default: null]
-  "tot_cred" decimal(3,0) [default: null]
-
-  Indexes {
-    dept_name [name: "dept_name"]
-  }
-}
-
-Table "takes" {
-  "ID" varchar(5) [not null]
-  "course_id" varchar(8) [not null]
-  "sec_id" varchar(8) [not null]
-  "semester" varchar(6) [not null]
-  "year" decimal(4,0) [not null]
-  "grade" varchar(2) [default: null]
-
-  Indexes {
-    (ID, course_id, sec_id, semester, year) [pk]
-    (course_id, sec_id, semester, year) [name: "course_id"]
-  }
-}
-
-Table "teaches" {
-  "ID" varchar(5) [not null]
-  "course_id" varchar(8) [not null]
-  "sec_id" varchar(8) [not null]
-  "semester" varchar(6) [not null]
-  "year" decimal(4,0) [not null]
-
-  Indexes {
-    (ID, course_id, sec_id, semester, year) [pk]
-    (course_id, sec_id, semester, year) [name: "course_id"]
-  }
-}
-
-Table "time_slot" {
-  "time_slot_id" varchar(4) [not null]
-  "day" varchar(1) [not null]
-  "start_hr" decimal(2,0) [not null]
-  "start_min" decimal(2,0) [not null]
-  "end_hr" decimal(2,0) [default: null]
-  "end_min" decimal(2,0) [default: null]
-
-  Indexes {
-    (time_slot_id, day, start_hr, start_min) [pk]
-  }
-}
-
-Ref "advisor_ibfk_1":"instructor"."ID" < "advisor"."i_ID" [delete: set null]
-
-Ref "advisor_ibfk_2":"student"."ID" < "advisor"."s_ID" [delete: cascade]
-
-Ref "course_ibfk_1":"department"."dept_name" < "course"."dept_name" [delete: set null]
-
-Ref "instructor_ibfk_1":"department"."dept_name" < "instructor"."dept_name" [delete: set null]
-
-Ref "prereq_ibfk_1":"course"."course_id" < "prereq"."course_id" [delete: cascade]
-
-Ref "prereq_ibfk_2":"course"."course_id" < "prereq"."prereq_id"
-
-Ref "section_ibfk_1":"course"."course_id" < "section"."course_id" [delete: cascade]
-
-Ref "section_ibfk_2":"classroom".("building", "room_number") < "section".("building", "room_number") [delete: set null]
-
-Ref "student_ibfk_1":"department"."dept_name" < "student"."dept_name" [delete: set null]
-
-Ref "takes_ibfk_1":"section".("course_id", "sec_id", "semester", "year") < "takes".("course_id", "sec_id", "semester", "year") [delete: cascade]
-
-Ref "takes_ibfk_2":"student"."ID" < "takes"."ID" [delete: cascade]
-
-Ref "teaches_ibfk_1":"section".("course_id", "sec_id", "semester", "year") < "teaches".("course_id", "sec_id", "semester", "year") [delete: cascade]
-
-Ref "teaches_ibfk_2":"instructor"."ID" < "teaches"."ID" [delete: cascade]

@@ -30,8 +30,10 @@ def erd_generator(usr_credentials, db_name, page):
             sql_without_functions = re.sub(function_pattern, '', sql)
             with open(output_file, 'w') as file:
                 file.write(sql_without_functions)
-
-        sp.run(['node', js_file], check=True, capture_output=True, text=True)
+        try:
+            sp.run(['node', js_file], check=True, capture_output=True, text=True)
+        except sp.CalledProcessError as e:
+            display_action(e.stderr, page)
 
         command = 'npx dbml-renderer -i schema.dbml -o schema.svg'
         sp.run(command, shell=True, check=True, capture_output=True, text=True)
