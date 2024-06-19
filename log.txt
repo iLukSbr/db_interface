@@ -1,0 +1,2 @@
+2024-06-18 21:22:51: Conexão realizada com sucesso.
+2024-06-18 21:22:54: Árvore de tabelas

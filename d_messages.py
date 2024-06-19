@@ -1,6 +1,17 @@
 import flet as ft
+from datetime import datetime
 
-# Mensagem na tela
+log_file_path = "log.txt"
 
 def display_action(arg, page):
-    page.show_snack_bar(ft.SnackBar(content=ft.Text(f"{arg}")))
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    message = f"{current_time}: {arg}"
+
+    page.show_snack_bar(ft.SnackBar(content=ft.Text(message)))
+
+    log_to_file(message)
+
+def log_to_file(message):
+    with open(log_file_path, 'a') as log_file:
+        log_file.write(message + '\n')

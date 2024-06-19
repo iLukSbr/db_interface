@@ -1,24 +1,80 @@
-Table "test_table" {
-  "id" int [pk, not null, increment]
-  "column1" varchar(255) [default: null]
-  "column2" varchar(255) [default: null]
-  "column3" varchar(255) [default: null]
-  "column4" varchar(255) [default: null]
-  "column5" varchar(255) [default: null]
-  "column6" varchar(255) [default: null]
-  "column7" varchar(255) [default: null]
-  "column8" varchar(255) [default: null]
-  "column9" varchar(255) [default: null]
-  "column10" varchar(255) [default: null]
-  "column11" varchar(255) [default: null]
-  "column12" varchar(255) [default: null]
-  "column13" varchar(255) [default: null]
-  "column14" varchar(255) [default: null]
-  "column15" varchar(255) [default: null]
-  "column16" varchar(255) [default: null]
-  "column17" varchar(255) [default: null]
-  "column18" varchar(255) [default: null]
-  "column19" varchar(255) [default: null]
-  "column20" varchar(255) [default: null]
-  "column100" varchar(255) [default: null]
+Enum "employees_gender_enum" {
+  "M"
+  "F"
 }
+
+Table "departments" {
+  "dept_no" char(4) [pk, not null]
+  "dept_name" varchar(40) [not null]
+
+  Indexes {
+    dept_name [unique, name: "dept_name"]
+  }
+}
+
+Table "dept_emp" {
+  "emp_no" int [not null]
+  "dept_no" char(4) [not null]
+  "from_date" date [not null]
+  "to_date" date [not null]
+
+  Indexes {
+    (emp_no, dept_no) [pk]
+    dept_no [name: "dept_no"]
+  }
+}
+
+Table "dept_manager" {
+  "emp_no" int [not null]
+  "dept_no" char(4) [not null]
+  "from_date" date [not null]
+  "to_date" date [not null]
+
+  Indexes {
+    (emp_no, dept_no) [pk]
+    dept_no [name: "dept_no"]
+  }
+}
+
+Table "employees" {
+  "emp_no" int [pk, not null]
+  "birth_date" date [not null]
+  "first_name" varchar(14) [not null]
+  "last_name" varchar(16) [not null]
+  "gender" employees_gender_enum [not null]
+  "hire_date" date [not null]
+}
+
+Table "salaries" {
+  "emp_no" int [not null]
+  "salary" int [not null]
+  "from_date" date [not null]
+  "to_date" date [not null]
+
+  Indexes {
+    (emp_no, from_date) [pk]
+  }
+}
+
+Table "titles" {
+  "emp_no" int [not null]
+  "title" varchar(50) [not null]
+  "from_date" date [not null]
+  "to_date" date [default: null]
+
+  Indexes {
+    (emp_no, title, from_date) [pk]
+  }
+}
+
+Ref "dept_emp_ibfk_1":"employees"."emp_no" < "dept_emp"."emp_no" [delete: cascade]
+
+Ref "dept_emp_ibfk_2":"departments"."dept_no" < "dept_emp"."dept_no" [delete: cascade]
+
+Ref "dept_manager_ibfk_1":"employees"."emp_no" < "dept_manager"."emp_no" [delete: cascade]
+
+Ref "dept_manager_ibfk_2":"departments"."dept_no" < "dept_manager"."dept_no" [delete: cascade]
+
+Ref "salaries_ibfk_1":"employees"."emp_no" < "salaries"."emp_no" [delete: cascade]
+
+Ref "titles_ibfk_1":"employees"."emp_no" < "titles"."emp_no" [delete: cascade]
