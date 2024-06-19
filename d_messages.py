@@ -1,7 +1,7 @@
 import flet as ft
 from datetime import datetime
 
-log_file_path = "log.txt"
+log_file_path = "db_interface.log"
 
 def display_action(arg, page):
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

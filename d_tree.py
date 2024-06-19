@@ -23,6 +23,7 @@ def erd_generator(usr_credentials, db_name, page):
         except sp.CalledProcessError as e:
             display_action(e.stderr, page)
 
+        # Remove funções do PostgreSQL para evitar erros de compatibilidade
         if(usr_credentials["database"] == "PostgreSQL"):
             with open(output_file, 'r') as file:
                 sql = file.read()
@@ -30,6 +31,19 @@ def erd_generator(usr_credentials, db_name, page):
             sql_without_functions = re.sub(function_pattern, '', sql)
             with open(output_file, 'w') as file:
                 file.write(sql_without_functions)
+
+        # Remove delimitadores do MySQL para evitar erros de compatibilidade
+        elif (usr_credentials["database"] == "MySQL"):
+            with open(output_file, 'r') as file:
+                lines = file.readlines()
+            with open(output_file, 'w') as file:
+                in_delimiter = False
+                for line in lines:
+                    if 'DELIMITER' in line:
+                        in_delimiter = not in_delimiter
+                    elif not in_delimiter:
+                        file.write(line)
+
         try:
             sp.run(['node', js_file], check=True, capture_output=True, text=True)
         except sp.CalledProcessError as e:
