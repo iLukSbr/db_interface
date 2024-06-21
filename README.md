@@ -7,7 +7,7 @@ Ferramenta de visualização de bancos de dados.
 - Node.js 20.14.0;
 - Python 3.12.
 
-#Instalações no Linux (terminal):
+# Instalações no Linux (terminal):
 - Node:
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 nvm install 20
