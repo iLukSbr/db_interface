@@ -10,7 +10,7 @@ Ferramenta de visualização de bancos de dados.
 - Exportação das tabelas para .csv e .json;
 - Exportação do diagrama para .svg.
 
-- Download:
+# Download (terminal)
 
 git pull https://github.com/iLukSbr/db_interface
 
