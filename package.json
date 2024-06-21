@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@dbml/core": "^3.5.1",
-    "@softwaretechnik/dbml-renderer": "^1.0.30"
-  }
-}
