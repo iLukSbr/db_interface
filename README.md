@@ -44,10 +44,16 @@ sudo apt-get install zenity libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 
 - apt:
 
-sudo apt install wine libmpv1 
+sudo apt install wine libmpv1
+
+# Instaladores para Windows:
+- Node: https://nodejs.org/en/download/prebuilt-installer
+- Python: https://www.python.org/downloads/
+- MySQL: https://dev.mysql.com/downloads/mysql/
+- PostgreSQL: https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
 
 # Instalações em ambos, Linux e Windows (terminal):
-  - Pip:
+- Pip:
 
 pip install flet cryptography pymysql psycopg2-binary pandas pyinstaller cffi datetime
 
