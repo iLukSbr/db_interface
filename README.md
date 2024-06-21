@@ -1,5 +1,5 @@
 # Interface de Bancos de Dados
-Ferramenta de visualização de bancos de dados.
+Ferramenta de visualização de bancos de dados que permite a visualização de tabelas, digitação de consultas SQL em DML (Data Manipulation Language), dump das tabelas para arquivos .sql, conversão .sql para .dbml, geração de diagrama físico das tabelas e exportação das tabelas para .csv e .json e diagrama para .svg.
 
 - Download:
 
