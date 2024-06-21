@@ -24,7 +24,7 @@ sudo apt-get install zenity libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 - apt:
 sudo apt install wine libmpv1 
 
-  #Instalações em ambos, Linux e Windows (terminal):
+# Instalações em ambos, Linux e Windows (terminal):
   - Pip:
 pip install flet cryptography pymysql psycopg2-binary pandas pyinstaller cffi datetime
 
