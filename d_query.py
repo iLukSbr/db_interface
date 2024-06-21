@@ -12,6 +12,8 @@ def queries(page, con, usr_credentials):
         label="",
         multiline=True
     )
+    vertical = ft.Column([query_field], scroll=True, expand=True)
+    horizontal = ft.Row([vertical], scroll=ft.ScrollMode.ALWAYS, expand=True,vertical_alignment=ft.CrossAxisAlignment.START, width=1250)
 
     def handle_query_click(e):
         global table, column_names
@@ -42,7 +44,7 @@ def queries(page, con, usr_credentials):
                 query_view = ft.View(
                     "/query",[
                         menubar,
-                        query_field,
+                        horizontal,
                         query_button,
                         scroll_tab
                     ]
@@ -62,7 +64,7 @@ def queries(page, con, usr_credentials):
     query_view = ft.View(
         "/query",[
             menubar,
-            query_field,
+            horizontal,
             query_button
         ]
     )
