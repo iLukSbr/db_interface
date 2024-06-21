@@ -36,9 +36,13 @@ npm install @dbml/core @softwaretechnik/dbml-renderer
 
 # Compilação no Linux (terminal):
 pyinstaller --onefile --add-data "mysql2dbml.js:." --add-data "postgres2dbml.js:." main.py
+cp postgres2dbml.js dist
+cp mysql2dbml.js dist
 
 # Compilação no Windows (terminal):
 pyinstaller --onefile --add-data "mysql2dbml.js;." --add-data "postgres2dbml.js;." main.py
+copy postgres2dbml.js dist
+copy mysql2dbml.js dist
 
 # Execução em ambos, Linux e Windows (terminal):
 cd dist
