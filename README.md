@@ -1,6 +1,9 @@
 # Interface de Bancos de Dados
 Ferramenta de visualização de bancos de dados.
 
+Download:
+git pull https://github.com/iLukSbr/db_interface
+
 # Versões de programas necessários
 - MySQL Community Server 8.4.0 LTS;
 - PostgreSQL 16.3;
