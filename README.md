@@ -33,6 +33,8 @@ apt install python3.12
 
 curl -sS https://bootstrap.pypa.io/get-pip.py | python3.12 
 
+sudo apt-get install libpython3.12-dev
+
 - Node:
 
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
