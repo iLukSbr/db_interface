@@ -15,7 +15,7 @@ def erd_generator(usr_credentials, db_name, page):
             js_file = os.path.join(os.getcwd(), 'mysql2dbml.js')
         elif usr_credentials["database"] == "PostgreSQL":
             os.environ['PGPASSWORD'] = usr_credentials["password"]
-            command = f'pg_dump -U {usr_credentials["user"]} -h {usr_credentials["host"]} -p {usr_credentials["port"]} -w -s -O -x --no-comments --no-publications --no-security-labels --no-subscriptions --no-table-access-method --no-tablespaces --no-toast-compression --no-unlogged-table-data -n {db_name} > {output_file}'
+            command = f'pg_dump -U {usr_credentials["user"]} -h {usr_credentials["host"]} -p {usr_credentials["port"]} -w -s -O -x --no-comments --no-publications --no-security-labels --no-subscriptions --no-tablespaces --no-toast-compression --no-unlogged-table-data -n {db_name} > {output_file}'
             js_file = os.path.join(os.getcwd(), 'postgres2dbml.js')
 
         try:
