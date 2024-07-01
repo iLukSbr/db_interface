@@ -1,5 +1,5 @@
-# Interface de Bancos de Dados
-Ferramenta de visualização de bancos de dados.
+# Database Interface
+MySQL/PostgreSQL database GUI with database/table selector, table exporter to .csv or .json, query fielld, .sql dump, .dbml generator and ERD diagram .svg visualizer and exporter.
 
 # Funcionalidades
 - Visualização de tabelas;
