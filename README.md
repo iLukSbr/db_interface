@@ -1,5 +1,5 @@
 # Database Interface
-MySQL/PostgreSQL database GUI with credentials save/encryption, database/table selector, table exporter to .csv or .json, query fielld, .sql dump, .dbml generator and ERD diagram .svg visualizer and exporter.
+MySQL/PostgreSQL database GUI with credentials save/encryption, database/table selector, table exporter to .csv or .json, query field, .sql dump, .dbml generator and ERD diagram .svg visualizer and exporter.
 
 # Funcionalidades
 - Visualização de tabelas;
